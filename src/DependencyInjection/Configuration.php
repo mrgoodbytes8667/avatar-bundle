@@ -19,7 +19,8 @@ class Configuration implements ConfigurationInterface
 
         $treeBuilder->getRootNode()
             ->children()
-                ->scalarNode('user_class')->end()
+                ->scalarNode('user_class')->defaultValue('App\Entity\User')->end()
+                ->scalarNode('multiavatar_salt')->defaultValue('')->end()
             ->end();
 
         return $treeBuilder;

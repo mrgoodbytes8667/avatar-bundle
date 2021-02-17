@@ -72,6 +72,7 @@ Create a config file named `config\packages\bytes_avatar.yaml` with the content 
 ```yaml
 bytes_avatar:
   user_class: App\Entity\User
+  multiavatar_salt: '' # This can be any value including an empty string
 ```
 
 Sample implementation for a User entity that already has a required email field:

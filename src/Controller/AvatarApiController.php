@@ -25,14 +25,16 @@ class AvatarApiController
      * @var Security
      */
     private $security;
+    private string $multiAvatarSalt;
 
     /**
      * AvatarApiController constructor.
      * @param Security $security
      */
-    public function __construct(Security $security)
+    public function __construct(Security $security, string $multiAvatarSalt)
     {
         $this->security = $security;
+        $this->multiAvatarSalt = $multiAvatarSalt;
     }
 
     /**
@@ -90,7 +92,7 @@ class AvatarApiController
         $im = new Imagick();
 
         $im->setBackgroundColor(new ImagickPixel('transparent'));
-        $im->readImageBlob($multiAvatar($avatarId));
+        $im->readImageBlob($multiAvatar(md5($avatarId . $this->multiAvatarSalt)));
 
         $im->setImageFormat("png32");
 

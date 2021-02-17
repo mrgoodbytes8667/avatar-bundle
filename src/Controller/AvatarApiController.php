@@ -28,18 +28,21 @@ class AvatarApiController
     private $security;
     private string $multiAvatarSalt;
     private string $multiAvatarField;
+    private string $nullUserReplacement;
 
     /**
      * AvatarApiController constructor.
      * @param Security $security
      * @param string $multiAvatarSalt
      * @param string $multiAvatarField
+     * @param string $nullUserReplacement
      */
-    public function __construct(Security $security, string $multiAvatarSalt = '', string $multiAvatarField = '')
+    public function __construct(Security $security, string $multiAvatarSalt = '', string $multiAvatarField = '', string $nullUserReplacement = '')
     {
         $this->security = $security;
         $this->multiAvatarSalt = $multiAvatarSalt;
         $this->multiAvatarField = $multiAvatarField;
+        $this->nullUserReplacement = $nullUserReplacement;
     }
 
     /**
@@ -52,7 +55,7 @@ class AvatarApiController
         if (!empty($user)) {
             return $this->getGravatar($user->getGravatar($size));
         } else {
-            return $this->getGravatar(Gravatar::url('1', $size));
+            return $this->getGravatar(Gravatar::url($this->nullUserReplacement, $size));
         }
     }
 
@@ -81,7 +84,7 @@ class AvatarApiController
                 $param = $user->$function();
             }
         } else {
-            $param = Uuid::v4();
+            $param = $this->nullUserReplacement;
         }
         return $this->getMultiAvatar($param);
     }

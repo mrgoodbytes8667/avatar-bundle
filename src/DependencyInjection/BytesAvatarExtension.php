@@ -36,5 +36,6 @@ class BytesAvatarExtension extends Extension implements ExtensionInterface
         $definition = $container->getDefinition('bytes_avatar.avatar_api_controller');
         $definition->replaceArgument(1, $config['multiavatar']['salt']);
         $definition->replaceArgument(2, $config['multiavatar']['field']);
+        $definition->replaceArgument(3, $config['null_user_replacement']);
     }
 }

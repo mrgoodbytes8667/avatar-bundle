@@ -19,7 +19,8 @@ return static function (ContainerConfigurator $container) {
     $services->set('bytes_avatar.avatar_api_controller', AvatarApiController::class)
         ->args([
             service('security.helper'), // Symfony\Component\Security\Core\Security
-            '' // $config['multiavatar_salt']
+            '', // $config['multiavatar']['salt']
+            '', // $config['multiavatar']['field']
         ])
         ->alias(AvatarApiController::class, 'bytes_avatar.avatar_api_controller')
         ->public();

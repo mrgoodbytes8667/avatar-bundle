@@ -13,6 +13,7 @@ use Multiavatar\Multiavatar;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Uid\Uuid;
+use function Symfony\Component\String\u;
 
 
 /**
@@ -26,15 +27,19 @@ class AvatarApiController
      */
     private $security;
     private string $multiAvatarSalt;
+    private string $multiAvatarField;
 
     /**
      * AvatarApiController constructor.
      * @param Security $security
+     * @param string $multiAvatarSalt
+     * @param string $multiAvatarField
      */
-    public function __construct(Security $security, string $multiAvatarSalt)
+    public function __construct(Security $security, string $multiAvatarSalt = '', string $multiAvatarField = '')
     {
         $this->security = $security;
         $this->multiAvatarSalt = $multiAvatarSalt;
+        $this->multiAvatarField = $multiAvatarField;
     }
 
     /**
@@ -72,7 +77,8 @@ class AvatarApiController
         $param = '';
         if (!empty($user)) {
             if ($user instanceof UserInterface) {
-                $param = $user->getId();
+                $function = u($this->multiAvatarField)->prepend('get_')->camel()->toString();
+                $param = $user->$function();
             }
         } else {
             $param = Uuid::v4();

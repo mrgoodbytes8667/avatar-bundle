@@ -15,6 +15,7 @@ use Bytes\EnumSerializerBundle\Enums\Enum;
  * @method static self s80()
  * @method static self s157()
  * @method static self s253()
+ * @method static self s277()
  * @method static self s300()
  */
 class AvatarSize extends Enum
@@ -30,6 +31,7 @@ class AvatarSize extends Enum
             's80' => 80,
             's157' => 157,
             's253' => 253,
+            's277' => 277,
             's300' => 300,
         ];
     }

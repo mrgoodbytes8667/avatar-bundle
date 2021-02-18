@@ -101,6 +101,7 @@ class AvatarApiController
         $im = new Imagick();
 
         $im->setBackgroundColor(new ImagickPixel('transparent'));
+        $im->setResolution(300, 300);
         $im->readImageBlob($multiAvatar(md5($avatarId . $this->multiAvatarSalt)));
 
         $im->setImageFormat("png32");

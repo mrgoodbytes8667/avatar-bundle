@@ -1,6 +1,7 @@
 {
     "name": "mrgoodbytes8667/avatar-bundle",
     "type": "symfony-bundle",
+    "description": "A Symfony bundle for avatar caching",
     "license": "CC-BY-NC-4.0",
     "require": {
         "php": "^7.4 || ^8.0",

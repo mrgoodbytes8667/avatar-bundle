@@ -16,8 +16,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        php: [7.4]
-        dependency-version: [prefer-lowest, prefer-stable]
+        php: [ 7.4, 8.0 ]
+        dependency-version: [ prefer-stable, prefer-lowest ]
         os: [ubuntu-latest]
         phpuniturl: ["https://raw.githubusercontent.com/symfony/recipes/master/symfony/phpunit-bridge/4.3/bin/phpunit"]
 
@@ -64,7 +64,7 @@ jobs:
 
       - name: Install dependencies
         if: success()
-        run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
+        run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
 
       - name: Check file existence
         if: success()

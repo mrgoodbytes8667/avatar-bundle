@@ -1,9 +1,11 @@
 # avatar-bundle
-[![PHP from Packagist](https://img.shields.io/packagist/php-v/mrgoodbytes8667/avatar-bundle?style=flat)](https://packagist.org/packages/mrgoodbytes8667/avatar-bundle)
-[![Packagist Version](https://img.shields.io/packagist/v/mrgoodbytes8667/avatar-bundle?style=flat)](https://packagist.org/packages/mrgoodbytes8667/avatar-bundle)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mrgoodbytes8667/avatar-bundle/release?style=flat&label=stable)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mrgoodbytes8667/avatar-bundle/tests?style=flat)
-![Packagist License](https://img.shields.io/packagist/l/mrgoodbytes8667/avatar-bundle?style=flat)    
+[![Packagist Version](https://img.shields.io/packagist/v/mrgoodbytes8667/avatar-bundle?logo=packagist&logoColor=FFF&style=flat)](https://packagist.org/packages/mrgoodbytes8667/avatar-bundle)
+![PHP](https://img.shields.io/badge/php-%5E7.4%20%7C%7C%20%5E8.0-blue?logo=php&logoColor=FFF&style=flat)
+![Symfony Version](https://img.shields.io/badge/symfony-%5E5.2-lightgrey?logo=symfony&logoColor=FFFFFF&style=flat)
+![License](https://img.shields.io/badge/license-CC--BY--NC--4.0-lightgrey?logo=creative-commons&logoColor=FFFFFF&style=flat)  
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mrgoodbytes8667/avatar-bundle/release?label=stable&logo=github&logoColor=FFFFFF&style=flat)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mrgoodbytes8667/avatar-bundle/tests?logo=github&logoColor=FFFFFF&style=flat)
+[![codecov](https://img.shields.io/codecov/c/github/mrgoodbytes8667/avatar-bundle?logo=codecov&logoColor=FFF&style=flat)](https://codecov.io/gh/mrgoodbytes8667/avatar-bundle)  
 A Symfony bundle for avatar caching
 
 ## Installation

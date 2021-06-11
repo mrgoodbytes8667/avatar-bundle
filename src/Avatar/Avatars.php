@@ -54,7 +54,7 @@ class Avatars
             $this->multiAvatar($user)
         ];
         foreach (AvatarSize::toValues() as $size) {
-            $return[] = $this->gravatar($user, new AvatarSize($size));
+            $return[] = $this->gravatar($user, AvatarSize::from($size));
         }
         return $return;
     }

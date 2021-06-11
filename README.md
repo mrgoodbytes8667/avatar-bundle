@@ -1,10 +1,10 @@
 # avatar-bundle
 [![Packagist Version](https://img.shields.io/packagist/v/mrgoodbytes8667/avatar-bundle?logo=packagist&logoColor=FFF&style=flat)](https://packagist.org/packages/mrgoodbytes8667/avatar-bundle)
 ![PHP](https://img.shields.io/badge/php-%5E7.4%20%7C%7C%20%5E8.0-blue?logo=php&logoColor=FFF&style=flat)
-![Symfony Version](https://img.shields.io/badge/symfony-%5E5.2-lightgrey?logo=symfony&logoColor=FFFFFF&style=flat)
-![License](https://img.shields.io/badge/license-CC--BY--NC--4.0-lightgrey?logo=creative-commons&logoColor=FFFFFF&style=flat)  
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mrgoodbytes8667/avatar-bundle/release?label=stable&logo=github&logoColor=FFFFFF&style=flat)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mrgoodbytes8667/avatar-bundle/tests?logo=github&logoColor=FFFFFF&style=flat)
+![Symfony Version](https://img.shields.io/endpoint?url=https%3A%2F%2Fshields.goodbytes.live%2Fshield%2Fsymfony%2F%255E5.2&logoColor=FFF&style=flat)
+![License](https://img.shields.io/badge/license-CC--BY--NC--4.0-lightgrey?logo=creative-commons&logoColor=FFF&style=flat)  
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mrgoodbytes8667/avatar-bundle/release?label=stable&logo=github&logoColor=FFF&style=flat)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mrgoodbytes8667/avatar-bundle/tests?logo=github&logoColor=FFF&style=flat)
 [![codecov](https://img.shields.io/codecov/c/github/mrgoodbytes8667/avatar-bundle?logo=codecov&logoColor=FFF&style=flat)](https://codecov.io/gh/mrgoodbytes8667/avatar-bundle)  
 A Symfony bundle for avatar caching
 

@@ -4,12 +4,17 @@
 namespace Bytes\AvatarBundle\Avatar;
 
 
+use Bytes\AvatarBundle\Entity\UserInterface;
+use Bytes\AvatarBundle\Enums\AvatarSize;
+
 /**
  * Class Gravatar
  * @package Bytes\AvatarBundle\Avatar
  */
-class Gravatar
+class Gravatar implements AvatarInterface
 {
+    use AvatarTrait;
+
     /**
      * Get a Gravatar URL
      *
@@ -47,5 +52,16 @@ class Gravatar
             $url .= ' />';
         }
         return $url;
+    }
+
+    /**
+     * @param UserInterface|null $user
+     * @param AvatarSize|null $size
+     * @return string
+     */
+    public function generate(?UserInterface $user = null, ?AvatarSize $size = null)
+    {
+        $size = $size ?? AvatarSize::s80();
+        return $this->urlGenerator->generate('bytes_avatarbundle_gravatar', ['id' => $this->getUserId($user), 'size' => $size->value]);
     }
 }

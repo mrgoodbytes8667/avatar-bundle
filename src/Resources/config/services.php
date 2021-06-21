@@ -3,6 +3,9 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Bytes\AvatarBundle\Avatar\AvatarChain;
+use Bytes\AvatarBundle\Avatar\Gravatar;
+use Bytes\AvatarBundle\Avatar\Multiavatar;
 use Bytes\AvatarBundle\Controller\AvatarApiController;
 use Bytes\AvatarBundle\Controller\AvatarSelect2ApiController;
 use Bytes\AvatarBundle\Maker\MakeLiipAvatarConfig;
@@ -39,8 +42,19 @@ return static function (ContainerConfigurator $container) {
         ->args([
             service('security.helper'), // Symfony\Component\Security\Core\Security
             service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
+            service('bytes_avatar.locator.avatars'),
         ])
         ->alias(Avatars::class, 'bytes_avatar.avatars')
+        ->public();
+
+     $services->set('bytes_avatar.avatars.gravatar', Gravatar::class)
+         ->tag('bytes_avatar.avatars.service', ['alias' => 'gravatar'])
+         ->alias(Gravatar::class, 'bytes_avatar.avatars.gravatar')
+         ->public();
+
+    $services->set('bytes_avatar.avatars.multiavatar', Multiavatar::class)
+        ->tag('bytes_avatar.avatars.service', ['alias' => 'multiavatar'])
+        ->alias(Multiavatar::class, 'bytes_avatar.avatars.multiavatar')
         ->public();
 
     $services->set('bytes_avatar.user_param_converter', UserParamConverter::class)
@@ -59,5 +73,10 @@ return static function (ContainerConfigurator $container) {
             param('kernel.project_dir'),
         ])
         ->tag('maker.command');
+
+    $services->set('bytes_avatar.locator.avatars', AvatarChain::class)
+        ->lazy()
+        ->alias(AvatarChain::class, 'bytes_avatar.locator.avatars')
+        ->public();
 
 };

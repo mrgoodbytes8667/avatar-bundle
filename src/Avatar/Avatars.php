@@ -17,31 +17,42 @@ use Symfony\Component\Uid\UuidV6;
 class Avatars
 {
     /**
-     * @var UrlGeneratorInterface
-     */
-    private UrlGeneratorInterface $urlGenerator;
-
-    /**
      * @var UserInterface
      */
     private UserInterface $user;
 
     /**
+     * @var AvatarInterface[]
+     */
+    private $all = [];
+
+    /**
      * Avatars constructor.
      * @param Security $security
      * @param UrlGeneratorInterface $urlGenerator
+     * @param AvatarChain $locator
      */
-    public function __construct(Security $security, UrlGeneratorInterface $urlGenerator)
+    public function __construct(Security $security, private UrlGeneratorInterface $urlGenerator, protected AvatarChain $locator)
     {
-
         // grab the user, do a quick sanity check that one exists
         /** @var UserInterface $user */
         $user = $security->getUser();
         if (!empty($user)) {
             $this->user = $user;
         }
-        $this->urlGenerator = $urlGenerator;
+    }
 
+    /**
+     * @return AvatarInterface[]
+     */
+    public function getAllTypes(): array
+    {
+        if(!empty($this->all))
+        {
+            return $this->all;
+        }
+        $this->all = $this->locator->getInstances();
+        return $this->all;
     }
 
     /**

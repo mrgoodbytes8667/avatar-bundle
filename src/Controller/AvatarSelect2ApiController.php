@@ -19,26 +19,14 @@ use Symfony\Component\Security\Core\Security;
 class AvatarSelect2ApiController extends AvatarApiController
 {
     /**
-     * @var CacheManager
-     */
-    private $cacheManager;
-
-    /**
-     * @var Avatars
-     */
-    private $avatars;
-
-    /**
      * AvatarSelect2ApiController constructor.
      * @param Security $security
      * @param CacheManager $cacheManager
      * @param Avatars $avatars
      */
-    public function __construct(Security $security, CacheManager $cacheManager, Avatars $avatars)
+    public function __construct(Security $security, private CacheManager $cacheManager, private Avatars $avatars)
     {
         parent::__construct($security);
-        $this->cacheManager = $cacheManager;
-        $this->avatars = $avatars;
     }
 
     /**

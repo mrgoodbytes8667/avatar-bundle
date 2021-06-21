@@ -4,11 +4,13 @@
 namespace Bytes\AvatarBundle\Entity;
 
 
+use Symfony\Component\Security\Core\User\UserInterface as CoreUserInterface;
+
 /**
  * Interface UserInterface
  * @package Bytes\AvatarBundle\Entity
  */
-interface UserInterface
+interface UserInterface extends CoreUserInterface
 {
     /**
      * @return mixed

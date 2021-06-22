@@ -13,9 +13,14 @@ use Symfony\Component\Uid\UuidV6;
 /**
  * Class Avatars
  * @package Bytes\AvatarBundle\Avatar
+ *
+ * @method string multiAvatar(?UserInterface $user = null)
+ * @method string gravatar(?UserInterface $user = null, ?AvatarSize $size = null)
  */
 class Avatars
 {
+    use AvatarTrait;
+
     /**
      * @var UserInterface
      */
@@ -32,7 +37,7 @@ class Avatars
      * @param UrlGeneratorInterface $urlGenerator
      * @param AvatarChain $locator
      */
-    public function __construct(Security $security, private UrlGeneratorInterface $urlGenerator, protected AvatarChain $locator)
+    public function __construct(Security $security, protected AvatarChain $locator)
     {
         // grab the user, do a quick sanity check that one exists
         /** @var UserInterface $user */
@@ -61,49 +66,33 @@ class Avatars
      */
     public function all($user = null)
     {
-        $return = [
-            $this->multiAvatar($user)
-        ];
-        foreach (AvatarSize::toValues() as $size) {
-            $return[] = $this->gravatar($user, AvatarSize::from($size));
+        $return = [];
+        foreach($this->getAllTypes() as $tag => $generator)
+        {
+            if($generator::supportsMultipleSizes())
+            {
+                foreach (AvatarSize::toValues() as $size) {
+                    $return[] = $generator->generate($user, AvatarSize::from($size));
+                }
+            } else {
+                $return[] = $generator->generate($user);
+            }
         }
         return $return;
     }
 
     /**
-     * @param UserInterface|string|null $user
+     * @param string $name
+     * @param array $arguments
      * @return string
      */
-    public function multiAvatar($user = null)
+    public function __call(string $name, array $arguments)
     {
-        return $this->urlGenerator->generate('bytes_avatarbundle_multiavatar', ['id' => $this->getUserId($user)]);
+        if($this->locator->has($name))
+        {
+            return $this->locator->get($name)->generate(...$arguments);
+        }
     }
 
-    /**
-     * @param UserInterface|mixed|null $user
-     * @return UuidV6|mixed|null
-     */
-    protected function getUserId($user)
-    {
-        if (!empty($user)) {
-            if ($user instanceof UserInterface) {
-                return $user->getId();
-            }
-        }
-        if (!empty($this->user)) {
-            return $this->user->getId();
-        }
-        return $user;
-    }
 
-    /**
-     * @param UserInterface|null $user
-     * @param AvatarSize|null $size
-     * @return string
-     */
-    public function gravatar(?UserInterface $user = null, ?AvatarSize $size = null)
-    {
-        $size = $size ?? AvatarSize::s80();
-        return $this->urlGenerator->generate('bytes_avatarbundle_gravatar', ['id' => $this->getUserId($user), 'size' => $size->value]);
-    }
 }

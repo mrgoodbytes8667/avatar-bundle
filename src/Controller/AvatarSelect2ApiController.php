@@ -11,6 +11,7 @@ use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Security;
+use function Symfony\Component\String\u;
 
 /**
  * Class AvatarSelect2ApiController
@@ -36,14 +37,13 @@ class AvatarSelect2ApiController extends AvatarApiController
     {
         /** @var UserInterface $user */
         $user = $this->getUser();
-        $content = [
-            'results' => [
-                $this->getSelect($this->avatars->gravatar($user, AvatarSize::s300()), 'Gravatar', $user->getAvatar()),
-                $this->getSelect($this->avatars->multiAvatar($user), 'Multiavatar', $user->getAvatar()),
-            ],
-            'pagination' => [
-                'more' => false
-            ]
+        $content = [];
+        foreach($this->avatars->getAllTypes() as $type => $generator)
+        {
+            $content['results'][] = $this->getSelect($generator->generate($user, AvatarSize::s300()), u($type)->title(), $user->getAvatar());
+        }
+        $content['pagination'] = [
+            'more' => false
         ];
 
         return new JsonResponse($content);
@@ -57,6 +57,7 @@ class AvatarSelect2ApiController extends AvatarApiController
      */
     protected function getSelect(string $imageUrl, string $text, ?string $avatar)
     {
+        $debug = $this->cacheManager->resolve($avatar, 'avatar_thumb_30x30');
         return [
             'id' => $imageUrl,
             'text' => $text,

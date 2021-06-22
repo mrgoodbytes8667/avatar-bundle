@@ -37,5 +37,29 @@ class BytesAvatarExtension extends Extension implements ExtensionInterface
         $definition->replaceArgument(1, $config['multiavatar']['salt']);
         $definition->replaceArgument(2, $config['multiavatar']['field']);
         $definition->replaceArgument(3, $config['null_user_replacement']);
+
+        foreach(['gravatar', 'multiavatar'] as $item)
+        {
+            if(!isset($config[$item]))
+            {
+                $config[$item]['enable'] = false;
+            }
+            if(!isset($config[$item]['enable']))
+            {
+                $config[$item]['enable'] = false;
+            }
+        }
+
+        $definition = $container->getDefinition('bytes_avatar.locator.avatars');
+        $skips = [];
+        if(!$config['gravatar']['enable'])
+        {
+            $skips['gravatar'] = true;
+        }
+        if(!$config['multiavatar']['enable'])
+        {
+            $skips['multiAvatar'] = true;
+        }
+        $definition->replaceArgument(0, $skips);
     }
 }

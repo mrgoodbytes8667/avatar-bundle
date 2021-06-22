@@ -20,6 +20,16 @@ class Multiavatar implements AvatarInterface
      */
     public function generate(?UserInterface $user = null, ?AvatarSize $size = null)
     {
-        return $this->urlGenerator->generate('bytes_avatarbundle_multiavatar', ['id' => $this->getUserId($user)]);
+        $url = $this->urlGenerator->generate('bytes_avatarbundle_multiavatar', ['id' => $this->getUserId($user) ?? 'abc123']);
+        return $url;
+    }
+
+    /**
+     * Does this generator support multiple sizes?
+     * @return bool
+     */
+    public static function supportsMultipleSizes(): bool
+    {
+        return false;
     }
 }

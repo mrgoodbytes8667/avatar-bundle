@@ -41,19 +41,19 @@ return static function (ContainerConfigurator $container) {
     $services->set('bytes_avatar.avatars', Avatars::class)
         ->args([
             service('security.helper'), // Symfony\Component\Security\Core\Security
-            service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
             service('bytes_avatar.locator.avatars'),
         ])
+        ->call('setUrlGenerator', [service('router.default')])
         ->alias(Avatars::class, 'bytes_avatar.avatars')
         ->public();
 
-     $services->set('bytes_avatar.avatars.gravatar', Gravatar::class)
-         ->tag('bytes_avatar.avatars.service', ['alias' => 'gravatar'])
-         ->alias(Gravatar::class, 'bytes_avatar.avatars.gravatar')
-         ->public();
+    $services->set('bytes_avatar.avatars.gravatar', Gravatar::class)
+        ->tag('bytes_avatar.avatars.service', ['alias' => 'gravatar'])
+        ->alias(Gravatar::class, 'bytes_avatar.avatars.gravatar')
+        ->public();
 
     $services->set('bytes_avatar.avatars.multiavatar', Multiavatar::class)
-        ->tag('bytes_avatar.avatars.service', ['alias' => 'multiavatar'])
+        ->tag('bytes_avatar.avatars.service', ['alias' => 'multiAvatar'])
         ->alias(Multiavatar::class, 'bytes_avatar.avatars.multiavatar')
         ->public();
 
@@ -75,6 +75,9 @@ return static function (ContainerConfigurator $container) {
         ->tag('maker.command');
 
     $services->set('bytes_avatar.locator.avatars', AvatarChain::class)
+        ->args([
+            ''
+        ])
         ->lazy()
         ->alias(AvatarChain::class, 'bytes_avatar.locator.avatars')
         ->public();

@@ -14,7 +14,7 @@ class AvatarChain
      * AvatarChain constructor.
      * @param AvatarInterface[] $instances
      */
-    public function __construct(private array $instances = [])
+    public function __construct(private array $skips = [], private array $instances = [])
     {
     }
 
@@ -44,7 +44,10 @@ class AvatarChain
     public function addInstance(AvatarInterface $instance, ?string $alias = null): self
     {
         $alias ??= $instance::class;
-        $this->instances[$alias] = $instance;
+        if(!array_key_exists($alias, $this->skips))
+        {
+            $this->instances[$alias] = $instance;
+        }
 
         return $this;
     }

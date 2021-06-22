@@ -27,4 +27,10 @@ interface AvatarInterface
      * @return $this
      */
     public function setUrlGenerator(UrlGeneratorInterface $urlGenerator);
+
+    /**
+     * Does this generator support multiple sizes?
+     * @return bool
+     */
+    public static function supportsMultipleSizes(): bool;
 }

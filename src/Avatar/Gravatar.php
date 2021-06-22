@@ -6,6 +6,7 @@ namespace Bytes\AvatarBundle\Avatar;
 
 use Bytes\AvatarBundle\Entity\UserInterface;
 use Bytes\AvatarBundle\Enums\AvatarSize;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Class Gravatar
@@ -62,6 +63,16 @@ class Gravatar implements AvatarInterface
     public function generate(?UserInterface $user = null, ?AvatarSize $size = null)
     {
         $size = $size ?? AvatarSize::s80();
-        return $this->urlGenerator->generate('bytes_avatarbundle_gravatar', ['id' => $this->getUserId($user), 'size' => $size->value]);
+        $url = $this->urlGenerator->generate('bytes_avatarbundle_gravatar', ['id' => $this->getUserId($user) ?? 'abc123', 'size' => $size->value]);
+        return $url;
+    }
+
+    /**
+     * Does this generator support multiple sizes?
+     * @return bool
+     */
+    public static function supportsMultipleSizes(): bool
+    {
+        return true;
     }
 }

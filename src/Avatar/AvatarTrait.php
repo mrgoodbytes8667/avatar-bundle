@@ -7,8 +7,6 @@ namespace Bytes\AvatarBundle\Avatar;
 use Bytes\AvatarBundle\Entity\UserInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\AbstractUid;
-use Symfony\Component\Uid\Ulid;
-use Symfony\Component\Uid\UuidV6;
 
 /**
  * Trait AvatarTrait
@@ -22,6 +20,24 @@ trait AvatarTrait
      * @var UrlGeneratorInterface
      */
     protected $urlGenerator;
+
+    /**
+     * @return UrlGeneratorInterface
+     */
+    public function getUrlGenerator(): UrlGeneratorInterface
+    {
+        return $this->urlGenerator;
+    }
+
+    /**
+     * @param UrlGeneratorInterface $urlGenerator
+     * @return $this
+     */
+    public function setUrlGenerator(UrlGeneratorInterface $urlGenerator)
+    {
+        $this->urlGenerator = $urlGenerator;
+        return $this;
+    }
 
     /**
      * @param UserInterface|mixed|null $user
@@ -46,28 +62,9 @@ trait AvatarTrait
      */
     protected function normalizeUserId($id)
     {
-        if($id instanceof AbstractUid)
-        {
+        if ($id instanceof AbstractUid) {
             return $id->toBase32();
         }
         return $id;
-    }
-
-    /**
-     * @return UrlGeneratorInterface
-     */
-    public function getUrlGenerator(): UrlGeneratorInterface
-    {
-        return $this->urlGenerator;
-    }
-
-    /**
-     * @param UrlGeneratorInterface $urlGenerator
-     * @return $this
-     */
-    public function setUrlGenerator(UrlGeneratorInterface $urlGenerator)
-    {
-        $this->urlGenerator = $urlGenerator;
-        return $this;
     }
 }

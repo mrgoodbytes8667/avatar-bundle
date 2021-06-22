@@ -5,6 +5,7 @@
     "license": "CC-BY-NC-4.0",
     "require": {
         "php": "^8.0",
+        "ext-gd": "*",
         "ext-imagick": "*",
         "ext-json": "*",
         "doctrine/orm": "^2.8",
@@ -25,7 +26,8 @@
     },
     "require-dev": {
         "doctrine/common": "^3.0",
-        "mrgoodbytes8667/test-common": ">=0.0.15",
+        "mrgoodbytes8667/test-common": "^0.0.17",
+        "mrgoodbytes8667/test-common-faker": "^0.3.4",
         "symfony/maker-bundle": "^1.0",
         "symfony/phpunit-bridge": "^5.3",
         "symfony/test-pack": "^1.0.8",

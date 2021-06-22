@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
  * @param RoutingConfigurator $routes
  */
 return function (RoutingConfigurator $routes) {
-    $routes->add('bytes_avatarbundle_gravatar', '/gravatar/{id}/{!size}/avatar.jpg')
+    $routes->add('bytes_avatarbundle_gravatar', '/gravatar/{id}/{!size}/avatar.png')
         ->controller([AvatarApiController::class, 'gravatar']);
 
 

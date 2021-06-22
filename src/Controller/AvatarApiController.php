@@ -10,9 +10,9 @@ use ImagickException;
 use ImagickPixel;
 use LogicException;
 use Multiavatar\Multiavatar;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Uid\Uuid;
 use function Symfony\Component\String\u;
 
 
@@ -23,26 +23,15 @@ use function Symfony\Component\String\u;
 class AvatarApiController
 {
     /**
-     * @var Security
-     */
-    private $security;
-    private string $multiAvatarSalt;
-    private string $multiAvatarField;
-    private string $nullUserReplacement;
-
-    /**
      * AvatarApiController constructor.
      * @param Security $security
      * @param string $multiAvatarSalt
      * @param string $multiAvatarField
      * @param string $nullUserReplacement
+     * @param Image|null $image
      */
-    public function __construct(Security $security, string $multiAvatarSalt = '', string $multiAvatarField = '', string $nullUserReplacement = '')
+    public function __construct(private Security $security, private string $multiAvatarSalt = '', private string $multiAvatarField = '', private string $nullUserReplacement = '', private ?Image $image = null)
     {
-        $this->security = $security;
-        $this->multiAvatarSalt = $multiAvatarSalt;
-        $this->multiAvatarField = $multiAvatarField;
-        $this->nullUserReplacement = $nullUserReplacement;
     }
 
     /**
@@ -65,9 +54,7 @@ class AvatarApiController
      */
     protected function getGravatar(string $url): Response
     {
-        return new Response(file_get_contents($url),
-            Response::HTTP_OK,
-            ['content-type' => ContentType::imageJpg()]);
+        return $this->image->getImageAsPngFromUrl($url);
     }
 
     /**

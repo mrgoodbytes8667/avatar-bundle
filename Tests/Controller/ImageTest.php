@@ -13,6 +13,11 @@ use Symfony\Component\Cache\CacheItem;
 use Symfony\Component\Cache\Exception\InvalidArgumentException;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class ImageTest
@@ -36,6 +41,22 @@ class ImageTest extends TestCase
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(ContentType::imagePng(), $response->headers->get('Content-Type'));
+    }
+
+    /**
+     * @dataProvider provideSampleImages
+     * @param $url
+     */
+    public function testGetImageAsWebP($url)
+    {
+        $cache = $this->getMockBuilder(AdapterInterface::class)->getMock();
+        $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
+        $image = new Image($cache, $client, false, '', 1);
+
+        $response = $image->getImageAsWebPFromUrl($this->faker->imageUrl());
+
+        $this->assertInstanceOf(Response::class, $response);
+        $this->assertEquals(ContentType::imageWebP(), $response->headers->get('Content-Type'));
     }
 
     /**
@@ -100,6 +121,19 @@ class ImageTest extends TestCase
     /**
      *
      */
+    public function testGetImageAsWebPFromUrl()
+    {
+        $url = $this->getSampleImage();
+        $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
+        $response = Image::getImageAsWebP($this->faker->imageUrl(), client: $client);
+
+        $this->assertInstanceOf(Response::class, $response);
+        $this->assertEquals(ContentType::imageWebP(), $response->headers->get('Content-Type'));
+    }
+
+    /**
+     *
+     */
     public function testGetImageAsPngInvalidFile()
     {
         $this->expectWarning();
@@ -119,5 +153,18 @@ class ImageTest extends TestCase
     {
         yield [$this->getSampleImage('png')];
         yield [$this->getSampleImage('jpg')];
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function testGetImageAsWithInvalidContentType()
+    {
+        $this->expectException(UnsupportedMediaTypeHttpException::class);
+        $this->expectExceptionMessage('"getImageAs" can only accept content types of jpeg, png, or webp.');
+        Image::getImageAs(ContentType::json(), $this->faker->imageUrl());
     }
 }

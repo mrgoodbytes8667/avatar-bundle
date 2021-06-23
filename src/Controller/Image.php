@@ -78,7 +78,7 @@ class Image
     public static function getImageAs(ContentType $contentType, string $url, ?string $data = null, ?HttpClientInterface $client = null): Response
     {
         if (!$contentType->equals(ContentType::imageJpg(), ContentType::imagePng(), ContentType::imageWebP())) {
-            throw new UnsupportedMediaTypeHttpException('');
+            throw new UnsupportedMediaTypeHttpException(sprintf('"%s" can only accept content types of jpeg, png, or webp.', __FUNCTION__));
         }
         if (empty($data)) {
             $client ??= HttpClient::create();
@@ -115,7 +115,7 @@ class Image
                 Response::HTTP_OK,
                 ['content-type' => $contentType]);
         } else {
-            throw new UnsupportedMediaTypeHttpException('');
+            throw new UnsupportedMediaTypeHttpException('Unable to process image');
         }
     }
 

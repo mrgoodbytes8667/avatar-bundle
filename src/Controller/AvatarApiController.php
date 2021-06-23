@@ -10,15 +10,17 @@ use ImagickException;
 use ImagickPixel;
 use LogicException;
 use Multiavatar\Multiavatar;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Security;
 use function Symfony\Component\String\u;
 
+trigger_deprecation('mrgoodbytes8667/avatar-bundle', '0.0.2', 'The "%s" class is deprecated, use "%s" and/or "%s" instead.', AvatarApiController::class, GravatarApiController::class, MultiAvatarApiController::class);
 
 /**
  * Class AvatarApiController
  * @package Bytes\AvatarBundle\Controller
+ *
+ * @deprecated since v0.0.2, use Bytes\AvatarBundle\Controller\GravatarApiController and/or Bytes\AvatarBundle\Controller\MultiAvatarApiController instead.
  */
 class AvatarApiController
 {
@@ -122,5 +124,4 @@ class AvatarApiController
 
         return $user;
     }
-
 }

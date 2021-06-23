@@ -104,6 +104,7 @@ class Image
                     imagepng($im);
                     break;
                 default:
+                    imagepalettetotruecolor($im);
                     imagewebp($im);
                     break;
             }

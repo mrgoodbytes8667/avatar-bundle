@@ -4,15 +4,17 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Bytes\AvatarBundle\Avatar\AvatarChain;
+use Bytes\AvatarBundle\Avatar\Avatars;
 use Bytes\AvatarBundle\Avatar\Gravatar;
 use Bytes\AvatarBundle\Avatar\Multiavatar;
 use Bytes\AvatarBundle\Controller\AvatarApiController;
 use Bytes\AvatarBundle\Controller\AvatarSelect2ApiController;
+use Bytes\AvatarBundle\Controller\GravatarApiController;
 use Bytes\AvatarBundle\Controller\Image;
+use Bytes\AvatarBundle\Controller\MultiAvatarApiController;
 use Bytes\AvatarBundle\Imaging\Cache;
 use Bytes\AvatarBundle\Maker\MakeLiipAvatarConfig;
 use Bytes\AvatarBundle\Request\UserParamConverter;
-use Bytes\AvatarBundle\Avatar\Avatars;
 
 /**
  * @param ContainerConfigurator $container
@@ -21,7 +23,8 @@ return static function (ContainerConfigurator $container) {
 
     $services = $container->services();
 
-    $services->set('bytes_avatar.avatar_api_controller', AvatarApiController::class)
+    //region Controllers
+    $services->set('bytes_avatar.controller.avatar_api', AvatarApiController::class)
         ->args([
             service('security.helper'), // Symfony\Component\Security\Core\Security
             '', // $config['multiavatar']['salt']
@@ -29,19 +32,42 @@ return static function (ContainerConfigurator $container) {
             '', // $config['null_user_replacement']
             service('bytes_avatar.image'),
         ])
-        ->alias(AvatarApiController::class, 'bytes_avatar.avatar_api_controller')
+        ->alias(AvatarApiController::class, 'bytes_avatar.controller.avatar_api')
         ->public();
 
-    $services->set('bytes_avatar.avatar_select2_api_controller', AvatarSelect2ApiController::class)
+    $services->set('bytes_avatar.controller.gravatar_api', GravatarApiController::class)
+        ->args([
+            '', // $config['null_user_replacement']
+        ])
+        ->call('setImage', [service('bytes_avatar.image')])
+        ->call('setSecurity', [service('security.helper')])
+        ->alias(GravatarApiController::class, 'bytes_avatar.controller.gravatar_api')
+        ->public();
+
+    $services->set('bytes_avatar.controller.multiavatar_api', MultiAvatarApiController::class)
+        ->args([
+            service('http_client'),
+            '', // $config['multiavatar']['salt']
+            '', // $config['multiavatar']['field']
+            '', // $config['null_user_replacement']
+        ])
+        ->call('setImage', [service('bytes_avatar.image')])
+        ->call('setSecurity', [service('security.helper')])
+        ->alias(MultiAvatarApiController::class, 'bytes_avatar.controller.multiavatar_api')
+        ->public();
+
+    $services->set('bytes_avatar.controller.avatar_select2_api', AvatarSelect2ApiController::class)
         ->args([
             service('security.helper'), // Symfony\Component\Security\Core\Security
             service('liip_imagine.cache.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
             service('bytes_avatar.cache'), // Bytes\AvatarBundle\Imaging\Cache
             service('bytes_avatar.avatars'), // Bytes\AvatarBundle\Avatar\Avatars
         ])
-        ->alias(AvatarSelect2ApiController::class, 'bytes_avatar.avatar_select2_api_controller')
+        ->alias(AvatarSelect2ApiController::class, 'bytes_avatar.controller.avatar_select2_api')
         ->public();
+    //endregion
 
+    //region Avatars
     $services->set('bytes_avatar.avatars', Avatars::class)
         ->args([
             service('security.helper'), // Symfony\Component\Security\Core\Security
@@ -60,7 +86,9 @@ return static function (ContainerConfigurator $container) {
         ->tag('bytes_avatar.avatars.service', ['alias' => 'multiAvatar'])
         ->alias(Multiavatar::class, 'bytes_avatar.avatars.multiavatar')
         ->public();
+    //endregion
 
+    //region Requests
     $services->set('bytes_avatar.user_param_converter', UserParamConverter::class)
         ->args([
             service('doctrine.orm.default_entity_manager'),
@@ -69,7 +97,9 @@ return static function (ContainerConfigurator $container) {
         ->tag('request.param_converter', [
             'converter' => 'bytes_avatar_user'
         ]);
+    //endregion
 
+    //region Maker
     $services->set('bytes_avatar.command.make_liip_avatar_config', MakeLiipAvatarConfig::class)
         ->args([
             service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
@@ -77,7 +107,9 @@ return static function (ContainerConfigurator $container) {
             param('kernel.project_dir'),
         ])
         ->tag('maker.command');
+    //endregion
 
+    //region Handlers
     $services->set('bytes_avatar.locator.avatars', AvatarChain::class)
         ->args([
             ''
@@ -85,7 +117,9 @@ return static function (ContainerConfigurator $container) {
         ->lazy()
         ->alias(AvatarChain::class, 'bytes_avatar.locator.avatars')
         ->public();
+    //endregion
 
+    //region Imaging
     $services->set('bytes_avatar.image', Image::class)
         ->args([
             service('cache.app'),
@@ -107,5 +141,5 @@ return static function (ContainerConfigurator $container) {
         ->lazy()
         ->alias(Cache::class, 'bytes_avatar.cache')
         ->public();
-
+    //endregion
 };

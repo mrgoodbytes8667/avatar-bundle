@@ -4,6 +4,7 @@
 namespace Bytes\AvatarBundle\Imaging;
 
 
+use Illuminate\Support\Arr;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Liip\ImagineBundle\Imagine\Data\DataManager;
 use Liip\ImagineBundle\Imagine\Filter\FilterManager;
@@ -31,10 +32,25 @@ class Cache
      */
     public function warmup(string $imageUrl, array $filters = [], bool $force = false)
     {
-        foreach ($filters ?? $this->filterManager->getFilterConfiguration()->all() as $filter) {
+        foreach ($filters ?? $this->getFilters() as $filter) {
             if ($force || !$this->cacheManager->isStored($imageUrl, $filter)) {
                 $this->cacheManager->store($this->filterManager->applyFilter($this->dataManager->find($filter, $imageUrl), $filter), $imageUrl, $filter);
             }
         }
+    }
+
+    /**
+     * @param string[] $exclude
+     * @return string[]
+     */
+    public function getFilters(array $exclude = []): array
+    {
+        $filters = array_keys($this->filterManager->getFilterConfiguration()->all() ?? []);
+        if(!empty($exclude)) {
+            return Arr::where($filters, function ($value) use ($exclude) {
+                return !in_array($value, $exclude);
+            });
+        }
+        return $filters;
     }
 }

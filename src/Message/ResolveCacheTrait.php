@@ -6,7 +6,6 @@ namespace Bytes\AvatarBundle\Message;
 
 use DateTimeImmutable;
 use Liip\ImagineBundle\Async\Commands;
-use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Trait ResolveCacheTrait
@@ -14,10 +13,29 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 trait ResolveCacheTrait
 {
+    /**
+     * @var string
+     */
     private string $path;
+
+    /**
+     * @var array|null
+     */
     private ?array $filters = null;
+
+    /**
+     * @var bool
+     */
     private bool $force = false;
+
+    /**
+     * @var string
+     */
     private string $command = Commands::RESOLVE_CACHE;
+
+    /**
+     * @var DateTimeImmutable|null
+     */
     private ?DateTimeImmutable $createdAt = null;
 
     /**
@@ -108,5 +126,20 @@ trait ResolveCacheTrait
     {
         $this->createdAt = $createdAt ?? new DateTimeImmutable();
         return $this;
+    }
+
+    /**
+     * @param string $path
+     * @param array|null $filters
+     * @param bool $force
+     * @param string $command
+     * @return $this
+     */
+    private function set(string $path, ?array $filters, bool $force, string $command): self
+    {
+        $this->setPath($path);
+        $this->setFilters($filters);
+        $this->setForce($force);
+        return $this->setCommand($command);
     }
 }

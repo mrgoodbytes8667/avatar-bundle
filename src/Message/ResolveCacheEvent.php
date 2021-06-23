@@ -24,11 +24,12 @@ class ResolveCacheEvent extends Event
      * @param string $command
      * @param DateTimeImmutable|null $createdAt
      */
-    public function __construct(private string $path, private ?array $filters = null, private bool $force = false, private string $command = Commands::RESOLVE_CACHE, private ?DateTimeImmutable $createdAt = null)
+    public function __construct(string $path, ?array $filters = null, bool $force = false, string $command = Commands::RESOLVE_CACHE, ?DateTimeImmutable $createdAt = null)
     {
         if (empty($createdAt)) {
             $this->createdAt = new DateTimeImmutable();
         }
+        $this->set($path, $filters, $force, $command);
     }
 
     /**

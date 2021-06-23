@@ -8,8 +8,14 @@ use Bytes\ResponseBundle\Enums\ContentType;
 use DateInterval;
 use Psr\Cache\CacheException;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use function Symfony\Component\String\u;
 
 /**
@@ -30,7 +36,7 @@ class Image
      * @param string $cachePrefix
      * @param int $cacheDuration
      */
-    public function __construct(private AdapterInterface $cache, private bool $useCache, private string $cachePrefix, int $cacheDuration)
+    public function __construct(private AdapterInterface $cache, private HttpClientInterface $client, private bool $useCache, private string $cachePrefix, int $cacheDuration)
     {
         $expiresAfter = DateInterval::createFromDateString(sprintf('%d minutes', $cacheDuration));
         if (!$expiresAfter) {
@@ -43,19 +49,24 @@ class Image
     /**
      * @param string $url
      * @return Response
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function getImageAsPngFromUrl(string $url): Response
     {
         if (!$this->useCache) {
-            return static::getImageAsPng($url);
+            return static::getImageAsPng($url, client: $this->client);
         }
         try {
             $cacheKey = u($this->cachePrefix)->append('.getImageAsPngFromUrl.')->append(urlencode($url))->append('.contents')->toString();
             $item = $this->cache->getItem($cacheKey);
             if (!$item->isHit()) {
-                $data = file_get_contents($url);
-                $item->set($data);
+                $response = $this->client->request('GET', $url);
                 $item->expiresAfter($this->expiresAfter);
+                $data = $response->getContent();
+                $item->set($data);
                 $this->cache->save($item);
             }
             $data = $item->get();
@@ -63,18 +74,28 @@ class Image
             return static::getImageAsPng($url, $data);
         } catch (CacheException) {
             $this->useCache = false;
-            return static::getImageAsPng($url);
+            return static::getImageAsPng($url, client: $this->client);
         }
     }
 
     /**
      * @param string $url
      * @param string|null $data
+     * @param HttpClientInterface|null $client
      * @return Response
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
-    public static function getImageAsPng(string $url, ?string $data = null): Response
+    public static function getImageAsPng(string $url, ?string $data = null, ?HttpClientInterface $client = null): Response
     {
-        $data ??= file_get_contents($url);
+        if(empty($data))
+        {
+            $client ??= HttpClient::create();
+            $response = $client->request('GET', $url);
+            $data = $response->getContent();
+        }
         $info = getimagesizefromstring($data);
         if (isset($info['mime'])) {
             if ($info['mime'] === ContentType::imagePng()->value) {

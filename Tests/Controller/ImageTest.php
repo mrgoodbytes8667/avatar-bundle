@@ -5,11 +5,13 @@ namespace Bytes\AvatarBundle\Tests\Controller;
 use Bytes\AvatarBundle\Controller\Image;
 use Bytes\Common\Faker\TestFakerTrait;
 use Bytes\ResponseBundle\Enums\ContentType;
+use Bytes\Tests\Common\MockHttpClient\MockResponse;
 use Generator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Cache\CacheItem;
 use Symfony\Component\Cache\Exception\InvalidArgumentException;
+use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -27,9 +29,10 @@ class ImageTest extends TestCase
     public function testGetImageAsPng($url)
     {
         $cache = $this->getMockBuilder(AdapterInterface::class)->getMock();
-        $image = new Image($cache, false, '', 1);
+        $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
+        $image = new Image($cache, $client, false, '', 1);
 
-        $response = $image->getImageAsPngFromUrl($url);
+        $response = $image->getImageAsPngFromUrl($this->faker->imageUrl());
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(ContentType::imagePng(), $response->headers->get('Content-Type'));
@@ -44,10 +47,11 @@ class ImageTest extends TestCase
         $cache = $this->getMockBuilder(AdapterInterface::class)->getMock();
         $cache->method('getItem')
             ->willReturn($item);
-        $image = new Image($cache, true, '', 1);
         $url = $this->getSampleImage();
+        $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
+        $image = new Image($cache, $client, true, '', 1);
 
-        $response = $image->getImageAsPngFromUrl($url);
+        $response = $image->getImageAsPngFromUrl($this->faker->imageUrl());
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(ContentType::imagePng(), $response->headers->get('Content-Type'));
@@ -70,10 +74,11 @@ class ImageTest extends TestCase
         $cache = $this->getMockBuilder(AdapterInterface::class)->getMock();
         $cache->method('getItem')
             ->willThrowException(new InvalidArgumentException());
-        $image = new Image($cache, true, '', 1);
         $url = $this->getSampleImage();
+        $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
+        $image = new Image($cache, $client, true, '', 1);
 
-        $response = $image->getImageAsPngFromUrl($url);
+        $response = $image->getImageAsPngFromUrl($this->faker->imageUrl());
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(ContentType::imagePng(), $response->headers->get('Content-Type'));
@@ -85,7 +90,8 @@ class ImageTest extends TestCase
     public function testGetImageAsPngFromUrl()
     {
         $url = $this->getSampleImage();
-        $response = Image::getImageAsPng($url);
+        $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
+        $response = Image::getImageAsPng($this->faker->imageUrl(), client: $client);
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(ContentType::imagePng(), $response->headers->get('Content-Type'));
@@ -99,10 +105,11 @@ class ImageTest extends TestCase
         $this->expectWarning();
         $this->expectWarningMessage('Data is not in a recognized format');
         $cache = $this->getMockBuilder(AdapterInterface::class)->getMock();
-        $image = new Image($cache, false, '', 1);
         $url = $this->getSampleImage('txt');
+        $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
+        $image = new Image($cache, $client, false, '', 1);
 
-        $image->getImageAsPngFromUrl($url);
+        $image->getImageAsPngFromUrl($this->faker->imageUrl());
     }
 
     /**

@@ -89,6 +89,7 @@ return static function (ContainerConfigurator $container) {
     $services->set('bytes_avatar.image', Image::class)
         ->args([
             service('cache.app'),
+            service('http_client'),
             true,
             '',
             0

@@ -12,8 +12,10 @@ use Bytes\AvatarBundle\Controller\AvatarSelect2ApiController;
 use Bytes\AvatarBundle\Controller\GravatarApiController;
 use Bytes\AvatarBundle\Controller\Image;
 use Bytes\AvatarBundle\Controller\MultiAvatarApiController;
+use Bytes\AvatarBundle\EventListener\ResolveCacheSubscriber;
 use Bytes\AvatarBundle\Imaging\Cache;
 use Bytes\AvatarBundle\Maker\MakeLiipAvatarConfig;
+use Bytes\AvatarBundle\MessageHandler\ResolveCacheHandler;
 use Bytes\AvatarBundle\Request\UserParamConverter;
 
 /**
@@ -117,6 +119,9 @@ return static function (ContainerConfigurator $container) {
         ->lazy()
         ->alias(AvatarChain::class, 'bytes_avatar.locator.avatars')
         ->public();
+
+    $services->set('bytes_avatar.handler.resolve_cache', ResolveCacheHandler::class)
+        ->tag('messenger.message_handler');
     //endregion
 
     //region Imaging
@@ -134,12 +139,17 @@ return static function (ContainerConfigurator $container) {
 
     $services->set('bytes_avatar.cache', Cache::class)
         ->args([
-            service('liip_imagine.cache.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
-            service('liip_imagine.filter.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
-            service('liip_imagine.data.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
+            service('liip_imagine.cache.manager'),
+            service('liip_imagine.filter.manager'),
+            service('liip_imagine.data.manager'),
         ])
         ->lazy()
         ->alias(Cache::class, 'bytes_avatar.cache')
         ->public();
+    //endregion
+
+    //region Subscribers
+    $services->set('bytes_avatar.subscriber.resolve_cache', ResolveCacheSubscriber::class)
+        ->tag('kernel.event_subscriber');
     //endregion
 };

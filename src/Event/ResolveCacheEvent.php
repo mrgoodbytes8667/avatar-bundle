@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bytes\AvatarBundle\Message;
+namespace Bytes\AvatarBundle\Event;
 
 
 use DateTimeImmutable;
@@ -10,7 +10,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class ResolveCacheEvent
- * @package Bytes\AvatarBundle\Message
+ * @package Bytes\AvatarBundle\Event
  */
 class ResolveCacheEvent extends Event
 {

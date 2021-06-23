@@ -4,9 +4,9 @@
 namespace Bytes\AvatarBundle\EventListener;
 
 
-use Bytes\AvatarBundle\Message\ResolveCacheEvent;
+use Bytes\AvatarBundle\Event\ResolveCacheEvent;
+use Liip\ImagineBundle\Async\ResolveCacheProcessor;
 use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
-use Liip\ImagineBundle\Exception\Config\Filter\NotFoundException;
 use Liip\ImagineBundle\Imagine\Filter\FilterManager;
 use Liip\ImagineBundle\Service\FilterService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -58,7 +58,7 @@ class ResolveCacheSubscriber implements MessageHandlerInterface, EventSubscriber
     }
 
     /**
-     * @param ResolveCacheEvent $message
+     * @param \Bytes\AvatarBundle\Event\ResolveCacheEvent $message
      */
     public function __invoke(ResolveCacheEvent $message)
     {
@@ -66,8 +66,10 @@ class ResolveCacheSubscriber implements MessageHandlerInterface, EventSubscriber
     }
 
     /**
-     * @param ResolveCacheEvent $event
-     * @return ResolveCacheEvent
+     * @param \Bytes\AvatarBundle\Event\ResolveCacheEvent $event
+     * @return \Bytes\AvatarBundle\Event\ResolveCacheEvent
+     *
+     * @see ResolveCacheProcessor
      */
     public function onResolveCache(ResolveCacheEvent $event): ResolveCacheEvent
     {

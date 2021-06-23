@@ -9,6 +9,7 @@ use Bytes\AvatarBundle\Avatar\Multiavatar;
 use Bytes\AvatarBundle\Controller\AvatarApiController;
 use Bytes\AvatarBundle\Controller\AvatarSelect2ApiController;
 use Bytes\AvatarBundle\Controller\Image;
+use Bytes\AvatarBundle\Imaging\Cache;
 use Bytes\AvatarBundle\Maker\MakeLiipAvatarConfig;
 use Bytes\AvatarBundle\Request\UserParamConverter;
 use Bytes\AvatarBundle\Avatar\Avatars;
@@ -35,8 +36,7 @@ return static function (ContainerConfigurator $container) {
         ->args([
             service('security.helper'), // Symfony\Component\Security\Core\Security
             service('liip_imagine.cache.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
-            service('liip_imagine.filter.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
-            service('liip_imagine.data.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
+            service('bytes_avatar.cache'), // Bytes\AvatarBundle\Imaging\Cache
             service('bytes_avatar.avatars'), // Bytes\AvatarBundle\Avatar\Avatars
         ])
         ->alias(AvatarSelect2ApiController::class, 'bytes_avatar.avatar_select2_api_controller')
@@ -96,6 +96,16 @@ return static function (ContainerConfigurator $container) {
         ])
         ->lazy()
         ->alias(Image::class, 'bytes_avatar.image')
+        ->public();
+
+    $services->set('bytes_avatar.cache', Cache::class)
+        ->args([
+            service('liip_imagine.cache.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
+            service('liip_imagine.filter.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
+            service('liip_imagine.data.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
+        ])
+        ->lazy()
+        ->alias(Cache::class, 'bytes_avatar.cache')
         ->public();
 
 };

@@ -32,6 +32,7 @@ class Image
     /**
      * Image constructor.
      * @param AdapterInterface $cache
+     * @param HttpClientInterface $client
      * @param bool $useCache
      * @param string $cachePrefix
      * @param int $cacheDuration
@@ -46,37 +47,7 @@ class Image
         }
     }
 
-    /**
-     * @param string $url
-     * @return Response
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
-     */
-    public function getImageAsPngFromUrl(string $url): Response
-    {
-        if (!$this->useCache) {
-            return static::getImageAsPng($url, client: $this->client);
-        }
-        try {
-            $cacheKey = u($this->cachePrefix)->append('.getImageAsPngFromUrl.')->append(urlencode($url))->append('.contents')->toString();
-            $item = $this->cache->getItem($cacheKey);
-            if (!$item->isHit()) {
-                $response = $this->client->request('GET', $url);
-                $item->expiresAfter($this->expiresAfter);
-                $data = $response->getContent();
-                $item->set($data);
-                $this->cache->save($item);
-            }
-            $data = $item->get();
-
-            return static::getImageAsPng($url, $data);
-        } catch (CacheException) {
-            $this->useCache = false;
-            return static::getImageAsPng($url, client: $this->client);
-        }
-    }
+    //region getImageAs
 
     /**
      * @param string $url
@@ -90,32 +61,139 @@ class Image
      */
     public static function getImageAsPng(string $url, ?string $data = null, ?HttpClientInterface $client = null): Response
     {
-        if(empty($data))
-        {
+        return static::getImageAs(ContentType::imagePng(), $url, $data, $client);
+    }
+
+    /**
+     * @param ContentType $contentType = [ContentType::imageJpg(), ContentType::imagePng(), ContentType::imageWebP()][$any]
+     * @param string $url
+     * @param string|null $data
+     * @param HttpClientInterface|null $client
+     * @return Response
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public static function getImageAs(ContentType $contentType, string $url, ?string $data = null, ?HttpClientInterface $client = null): Response
+    {
+        if (!$contentType->equals(ContentType::imageJpg(), ContentType::imagePng(), ContentType::imageWebP())) {
+            throw new UnsupportedMediaTypeHttpException('');
+        }
+        if (empty($data)) {
             $client ??= HttpClient::create();
             $response = $client->request('GET', $url);
             $data = $response->getContent();
         }
         $info = getimagesizefromstring($data);
         if (isset($info['mime'])) {
-            if ($info['mime'] === ContentType::imagePng()->value) {
+            if ($info['mime'] === $contentType->value) {
                 return new Response($data,
                     Response::HTTP_OK,
-                    ['content-type' => ContentType::imagePng()]);
+                    ['content-type' => $contentType]);
             }
         }
         $im = imagecreatefromstring($data);
         if ($im !== false) {
             ob_start();
-            imagepng($im);
+            switch ($contentType) {
+                case ContentType::imageJpg():
+                    imagejpeg($im);
+                    break;
+                case ContentType::imagePng():
+                    imagepng($im);
+                    break;
+                default:
+                    imagewebp($im);
+                    break;
+            }
             imagedestroy($im);
             $image_data = ob_get_contents();
             ob_end_clean();
             return new Response($image_data,
                 Response::HTTP_OK,
-                ['content-type' => ContentType::imagePng()]);
+                ['content-type' => $contentType]);
         } else {
             throw new UnsupportedMediaTypeHttpException('');
         }
     }
+
+    /**
+     * @param string $url
+     * @param string|null $data
+     * @param HttpClientInterface|null $client
+     * @return Response
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public static function getImageAsWebP(string $url, ?string $data = null, ?HttpClientInterface $client = null): Response
+    {
+        return static::getImageAs(ContentType::imageWebP(), $url, $data, $client);
+    }
+    //endregion
+
+    //region getImageAsFromUrl
+
+    /**
+     * @param string $url
+     * @return Response
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getImageAsPngFromUrl(string $url): Response
+    {
+        return $this->getImageAsFromUrl($url, ContentType::imagePng());
+    }
+
+    /**
+     * @param string $url
+     * @param ContentType $contentType = [ContentType::imageJpg(), ContentType::imagePng(), ContentType::imageWebP()][$any]
+     * @return Response
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getImageAsFromUrl(string $url, ContentType $contentType): Response
+    {
+        $contentType ??= ContentType::imagePng();
+        if (!$this->useCache) {
+            return static::getImageAs($contentType, $url, client: $this->client);
+        }
+        try {
+            $cacheKey = u($this->cachePrefix)->append('.getImageAsFromUrl.')->append(urlencode($url))->append('.contents')->toString();
+            $item = $this->cache->getItem($cacheKey);
+            if (!$item->isHit()) {
+                $response = $this->client->request('GET', $url);
+                $item->expiresAfter($this->expiresAfter);
+                $data = $response->getContent();
+                $item->set($data);
+                $this->cache->save($item);
+            }
+            $data = $item->get();
+
+            return static::getImageAs($contentType, $url, $data);
+        } catch (CacheException) {
+            $this->useCache = false;
+            return static::getImageAs($contentType, $url, client: $this->client);
+        }
+    }
+
+    /**
+     * @param string $url
+     * @return Response
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getImageAsWebPFromUrl(string $url): Response
+    {
+        return $this->getImageAsFromUrl($url, ContentType::imageWebP());
+    }
+    //endregion
 }

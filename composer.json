@@ -17,6 +17,7 @@
         "symfony/console": "^5.3",
         "symfony/dependency-injection": "^5.3",
         "symfony/framework-bundle": "^5.3",
+        "symfony/messenger": "^5.3",
         "symfony/polyfill-uuid": "^1.20",
         "symfony/security-core": "^5.3",
         "symfony/serializer": "^5.3",

@@ -36,8 +36,7 @@ return static function (ContainerConfigurator $container) {
         ->args([
             service('security.helper'), // Symfony\Component\Security\Core\Security
             service('liip_imagine.cache.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
-            service('liip_imagine.filter.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
-            service('liip_imagine.data.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
+            service('bytes_avatar.cache'), // Bytes\AvatarBundle\Imaging\Cache
             service('bytes_avatar.avatars'), // Bytes\AvatarBundle\Avatar\Avatars
         ])
         ->alias(AvatarSelect2ApiController::class, 'bytes_avatar.avatar_select2_api_controller')

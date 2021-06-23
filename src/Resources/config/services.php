@@ -146,6 +146,12 @@ return static function (ContainerConfigurator $container) {
 
     //region Subscribers
     $services->set('bytes_avatar.subscriber.resolve_cache', ResolveCacheSubscriber::class)
-        ->tag('kernel.event_subscriber');
+        ->args([
+            service('liip_imagine.filter.manager'),
+            service('liip_imagine.service.filter'),
+            service('event_dispatcher'),
+        ])
+        ->tag('kernel.event_subscriber')
+        ->tag('messenger.message_handler');
     //endregion
 };

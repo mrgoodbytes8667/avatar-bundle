@@ -5,6 +5,8 @@ namespace Bytes\AvatarBundle\EventListener;
 
 
 use Bytes\AvatarBundle\Message\ResolveCacheEvent;
+use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
+use Liip\ImagineBundle\Exception\Config\Filter\NotFoundException;
 use Liip\ImagineBundle\Imagine\Filter\FilterManager;
 use Liip\ImagineBundle\Service\FilterService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -71,13 +73,26 @@ class ResolveCacheSubscriber implements MessageHandlerInterface, EventSubscriber
     {
         $filters = $event->getFilters() ?: array_keys($this->filterManager->getFilterConfiguration()->all());
         $path = $event->getPath();
-        $results = [];
+        $results = [
+            'status' => true,
+        ];
         foreach ($filters as $filter) {
             if ($event->isForce()) {
                 $this->filterService->bustCache($path, $filter);
             }
 
-            $results[$filter] = $this->filterService->getUrlOfFilteredImage($path, $filter);
+            try {
+                $result = $this->filterService->getUrlOfFilteredImage($path, $filter);
+                $results['results'][$filter] = $result;
+            } catch (NotLoadableException $e)
+            {
+                $results['exceptions'][$filter] = $e->getMessage();
+            } catch (\Exception $e)
+            {
+                $results['status'] = false;
+                $results['exceptions'][$filter] = $e->getMessage();
+                break;
+            }
         }
 
         $event->setResults($results);

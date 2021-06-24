@@ -5,6 +5,7 @@ namespace Bytes\AvatarBundle\EventListener;
 
 
 use Bytes\AvatarBundle\Event\ResolveCacheEvent;
+use Exception;
 use Liip\ImagineBundle\Async\ResolveCacheProcessor;
 use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
 use Liip\ImagineBundle\Imagine\Filter\FilterManager;
@@ -58,7 +59,7 @@ class ResolveCacheSubscriber implements MessageHandlerInterface, EventSubscriber
     }
 
     /**
-     * @param \Bytes\AvatarBundle\Event\ResolveCacheEvent $message
+     * @param ResolveCacheEvent $message
      */
     public function __invoke(ResolveCacheEvent $message)
     {
@@ -66,8 +67,8 @@ class ResolveCacheSubscriber implements MessageHandlerInterface, EventSubscriber
     }
 
     /**
-     * @param \Bytes\AvatarBundle\Event\ResolveCacheEvent $event
-     * @return \Bytes\AvatarBundle\Event\ResolveCacheEvent
+     * @param ResolveCacheEvent $event
+     * @return ResolveCacheEvent
      *
      * @see ResolveCacheProcessor
      */
@@ -77,6 +78,10 @@ class ResolveCacheSubscriber implements MessageHandlerInterface, EventSubscriber
         $path = $event->getPath();
         $results = [
             'status' => true,
+            'totals' => [
+                'results' => 0,
+                'exceptions' => 0,
+            ]
         ];
         foreach ($filters as $filter) {
             if ($event->isForce()) {
@@ -86,15 +91,23 @@ class ResolveCacheSubscriber implements MessageHandlerInterface, EventSubscriber
             try {
                 $result = $this->filterService->getUrlOfFilteredImage($path, $filter);
                 $results['results'][$filter] = $result;
-            } catch (NotLoadableException $e)
-            {
+            } catch (NotLoadableException $e) {
                 $results['exceptions'][$filter] = $e->getMessage();
-            } catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 $results['status'] = false;
                 $results['exceptions'][$filter] = $e->getMessage();
                 break;
             }
+        }
+
+        if(isset($results['results']))
+        {
+            $results['totals']['results'] = count($results['results']);
+        }
+
+        if(isset($results['exceptions']))
+        {
+            $results['totals']['exceptions'] = count($results['exceptions']);
         }
 
         $event->setResults($results);

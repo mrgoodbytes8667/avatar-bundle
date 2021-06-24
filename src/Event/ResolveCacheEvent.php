@@ -15,7 +15,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 class ResolveCacheEvent extends Event
 {
     /**
-     * @var array = ['status' => true, 'results' => [], 'exceptions' => []]
+     * @var array = ['status' => true, 'results' => [], 'exceptions' => [], 'totals' => ['results' => 0, 'exceptions' => 0]]
      */
     private $results = [];
 
@@ -46,7 +46,7 @@ class ResolveCacheEvent extends Event
     }
 
     /**
-     * @return array = ['status' => true, 'results' => [], 'exceptions' => []]
+     * @return array = ['status' => true, 'results' => [], 'exceptions' => [], 'totals' => ['results' => 0, 'exceptions' => 0]]
      */
     public function getResults(): array
     {
@@ -54,7 +54,7 @@ class ResolveCacheEvent extends Event
     }
 
     /**
-     * @param array $results = ['status' => true, 'results' => [], 'exceptions' => []]
+     * @param array $results = ['status' => true, 'results' => [], 'exceptions' => [], 'totals' => ['results' => 0, 'exceptions' => 0]]
      * @return $this
      */
     public function setResults(array $results): self

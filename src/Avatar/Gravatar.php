@@ -69,7 +69,7 @@ class Gravatar extends Avatar implements AvatarInterface
      * @param AvatarSize|null $size
      * @return UnicodeString|string|null
      */
-    public function generatePath(?UserInterface $user = null, ?AvatarSize $size = null): UnicodeString|string|null
+    public function generatePath($user = null, ?AvatarSize $size = null): UnicodeString|string|null
     {
         $size = $size ?? AvatarSize::s80();
         return $this->urlGenerator->generate('bytes_avatarbundle_gravatar', ['id' => $this->getUserId($user) ?? 'abc123', 'size' => $size->value]);

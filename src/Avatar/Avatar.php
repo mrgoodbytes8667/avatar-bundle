@@ -4,7 +4,6 @@
 namespace Bytes\AvatarBundle\Avatar;
 
 
-use Bytes\AvatarBundle\Entity\UserInterface;
 use Bytes\AvatarBundle\Enums\AvatarSize;
 use Symfony\Component\String\UnicodeString;
 use function Symfony\Component\String\u;
@@ -19,28 +18,26 @@ abstract class Avatar implements AvatarInterface
 
     /**
      * Generates the avatar URL
-     * @param UserInterface|null $user
+     * @param null $user
      * @param AvatarSize|null $size
      * @return string
      */
-    final public function generate(?UserInterface $user = null, ?AvatarSize $size = null)
+    final public function generate($user = null, ?AvatarSize $size = null)
     {
         $url = $this->generatePath($user, $size);
-        if(!($url instanceof UnicodeString))
-        {
+        if (!($url instanceof UnicodeString)) {
             $url = u($url);
         }
-        if($url->startsWith('/'))
-        {
+        if ($url->startsWith('/')) {
             $url = $url->after('/');
         }
         return $url->toString();
     }
 
     /**
-     * @param UserInterface|null $user
+     * @param null $user
      * @param AvatarSize|null $size
      * @return UnicodeString|string|null
      */
-    abstract public function generatePath(?UserInterface $user = null, ?AvatarSize $size = null): UnicodeString|string|null;
+    abstract public function generatePath($user = null, ?AvatarSize $size = null): UnicodeString|string|null;
 }

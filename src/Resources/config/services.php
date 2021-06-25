@@ -15,6 +15,7 @@ use Bytes\AvatarBundle\Controller\MultiAvatarApiController;
 use Bytes\AvatarBundle\EventListener\ResolveCacheSubscriber;
 use Bytes\AvatarBundle\Imaging\Cache;
 use Bytes\AvatarBundle\Maker\MakeLiipAvatarConfig;
+use Bytes\AvatarBundle\Maker\MakeLiipFilterEnum;
 use Bytes\AvatarBundle\Request\UserParamConverter;
 
 /**
@@ -105,6 +106,13 @@ return static function (ContainerConfigurator $container) {
         ->args([
             service('router.default'), // Symfony\Component\Routing\Generator\UrlGeneratorInterface
             service('debug.validator'), // Symfony\Component\Validator\Validator\ValidatorInterface
+            param('kernel.project_dir'),
+        ])
+        ->tag('maker.command');
+
+    $services->set('bytes_avatar.command.make_liip_filter_enum', MakeLiipFilterEnum::class)
+        ->args([
+            service('bytes_avatar.cache'),
             param('kernel.project_dir'),
         ])
         ->tag('maker.command');

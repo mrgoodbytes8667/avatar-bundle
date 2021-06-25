@@ -123,17 +123,26 @@ class MakeLiipFilterEnum extends AbstractMaker
             );
         }
 
+        $filters = $this->cache->getFilters();
+        $groups = [];
+        foreach ($filters as $i) {
+            $filter = u($i);
+            $filter = $filter->beforeLast('x')->beforeLast('_')->camel()->title()->toString();
+            $groups[$filter][] = $i;
+
+        }
+
         $extensionClassNameDetails = $generator->createClassNameDetails(
             'ImagineFilter',
             'Enums\\',
             'Enum'
         );
-
         $generator->generateClass(
             $extensionClassNameDetails->getFullName(),
             __DIR__ . DIRECTORY_SEPARATOR . 'LiipFilter.tpl.php',
             [
-                'filters' => $this->cache->getFilters(),
+                'filters' => $filters,
+                'groups' => $groups,
             ]
         );
 

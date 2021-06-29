@@ -42,7 +42,7 @@ class Avatars
         // grab the user, do a quick sanity check that one exists
         /** @var UserInterface $user */
         $user = $security->getUser();
-        if (!empty($user)) {
+        if (!empty($user) && $user instanceof UserInterface) {
             $this->user = $user;
         }
     }

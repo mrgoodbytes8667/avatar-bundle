@@ -106,6 +106,38 @@ class ImageTest extends TestCase
     }
 
     /**
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function testGetImageAsInvalidUrl()
+    {
+
+        $this->expectException(ClientExceptionInterface::class);
+        $client = new MockHttpClient(new MockResponse('', Response::HTTP_NOT_FOUND));
+
+        $response = Image::getImageAs(ContentType::imagePng(), url: $this->faker->imageUrl(), client: $client);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function testGetImageAsInvalidUrlWithValidDefaultUrl()
+    {
+        $url = $this->getSampleImage();
+        $client = new MockHttpClient([new MockResponse('', Response::HTTP_NOT_FOUND), new MockResponse(file_get_contents($url))]);
+
+        $response = Image::getImageAs(ContentType::imagePng(), url: $this->faker->imageUrl(), defaultUrl: $this->faker->imageUrl(), client: $client);
+
+        $this->assertInstanceOf(Response::class, $response);
+        $this->assertEquals(ContentType::imagePng(), $response->headers->get('Content-Type'));
+    }
+
+    /**
      *
      */
     public function testGetImageAsPngFromUrl()

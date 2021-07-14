@@ -16,6 +16,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 use function Symfony\Component\String\u;
 
 /**
@@ -52,6 +53,8 @@ class Image
     /**
      * @param string $url
      * @param string|null $data
+     * @param string|null $defaultUrl Fallback/default url if $url does not resolve, ignored if data or defaultData is provided
+     * @param string|null $defaultData Fallback/default data if $url does not resolve, ignored if data is provided
      * @param HttpClientInterface|null $client
      * @return Response
      * @throws ClientExceptionInterface
@@ -59,15 +62,17 @@ class Image
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public static function getImageAsPng(string $url, ?string $data = null, ?HttpClientInterface $client = null): Response
+    public static function getImageAsPng(string $url, ?string $data = null, ?string $defaultUrl = null, ?string $defaultData = null, ?HttpClientInterface $client = null): Response
     {
-        return static::getImageAs(ContentType::imagePng(), $url, $data, $client);
+        return static::getImageAs(ContentType::imagePng(), $url, $data, defaultUrl: $defaultUrl, defaultData: $defaultData, client: $client);
     }
 
     /**
      * @param ContentType $contentType = [ContentType::imageJpg(), ContentType::imagePng(), ContentType::imageWebP()][$any]
      * @param string $url
      * @param string|null $data
+     * @param string|null $defaultUrl Fallback/default url if $url does not resolve, ignored if data or defaultData is provided
+     * @param string|null $defaultData Fallback/default data if $url does not resolve, ignored if data is provided
      * @param HttpClientInterface|null $client
      * @return Response
      * @throws ClientExceptionInterface
@@ -75,7 +80,7 @@ class Image
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public static function getImageAs(ContentType $contentType, string $url, ?string $data = null, ?HttpClientInterface $client = null): Response
+    public static function getImageAs(ContentType $contentType, string $url, ?string $data = null, ?string $defaultUrl = null, ?string $defaultData = null, ?HttpClientInterface $client = null): Response
     {
         if (!$contentType->equals(ContentType::imageJpg(), ContentType::imagePng(), ContentType::imageWebP())) {
             throw new UnsupportedMediaTypeHttpException(sprintf('"%s" can only accept content types of jpeg, png, or webp.', __FUNCTION__));
@@ -83,7 +88,20 @@ class Image
         if (empty($data)) {
             $client ??= HttpClient::create();
             $response = $client->request('GET', $url);
-            $data = $response->getContent();
+            if (static::isSuccess($response)) {
+                $data = $response->getContent();
+            } else {
+                if (!empty($defaultUrl) && empty($defaultData)) {
+                    $response = $client->request('GET', $defaultUrl);
+                    $data = $response->getContent();
+                } elseif (!empty($defaultData)) {
+                    $data = $defaultData;
+                } else {
+                    // To simply throw the error
+                    $data = $response->getContent();
+                }
+            }
+
         }
         $info = getimagesizefromstring($data);
         if (isset($info['mime'])) {
@@ -120,18 +138,17 @@ class Image
     }
 
     /**
-     * @param string $url
-     * @param string|null $data
-     * @param HttpClientInterface|null $client
-     * @return Response
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
+     * @param ResponseInterface $response
+     * @return bool
      */
-    public static function getImageAsWebP(string $url, ?string $data = null, ?HttpClientInterface $client = null): Response
+    private static function isSuccess(ResponseInterface $response): bool
     {
-        return static::getImageAs(ContentType::imageWebP(), $url, $data, $client);
+        try {
+            $code = $response->getStatusCode();
+            return $code >= 200 && $code < 300;
+        } catch (TransportExceptionInterface) {
+            return false;
+        }
     }
     //endregion
 
@@ -139,19 +156,39 @@ class Image
 
     /**
      * @param string $url
+     * @param string|null $data
+     * @param string|null $defaultUrl Fallback/default url if $url does not resolve, ignored if data or defaultData is provided
+     * @param string|null $defaultData Fallback/default data if $url does not resolve, ignored if data is provided
+     * @param HttpClientInterface|null $client
      * @return Response
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function getImageAsPngFromUrl(string $url): Response
+    public static function getImageAsWebP(string $url, ?string $data = null, ?string $defaultUrl = null, ?string $defaultData = null, ?HttpClientInterface $client = null): Response
     {
-        return $this->getImageAsFromUrl($url, ContentType::imagePng());
+        return static::getImageAs(ContentType::imageWebP(), $url, $data, defaultUrl: $defaultUrl, defaultData: $defaultData, client: $client);
     }
 
     /**
      * @param string $url
+     * @param string|null $defaultUrl Fallback/default url if $url does not resolve
+     * @return Response
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getImageAsPngFromUrl(string $url, ?string $defaultUrl = null): Response
+    {
+        return $this->getImageAsFromUrl($url, ContentType::imagePng(), defaultUrl: $defaultUrl);
+    }
+
+    /**
+     * @param string $url
+     * @param string|null $defaultUrl Fallback/default url if $url does not resolve, ignored if data or defaultData is provided
+     * @param string|null $defaultData Fallback/default data if $url does not resolve, ignored if data is provided
      * @param ContentType $contentType = [ContentType::imageJpg(), ContentType::imagePng(), ContentType::imageWebP()][$any]
      * @return Response
      * @throws ClientExceptionInterface
@@ -159,11 +196,11 @@ class Image
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function getImageAsFromUrl(string $url, ContentType $contentType): Response
+    public function getImageAsFromUrl(string $url, ContentType $contentType, ?string $defaultUrl = null, ?string $defaultData = null): Response
     {
         $contentType ??= ContentType::imagePng();
         if (!$this->useCache) {
-            return static::getImageAs($contentType, $url, client: $this->client);
+            return static::getImageAs($contentType, $url, defaultUrl: $defaultUrl, defaultData: $defaultData, client: $this->client);
         }
         try {
             $cacheKey = u($this->cachePrefix)->append('.getImageAsFromUrl.')->append(urlencode($url))->append('.contents')->toString();
@@ -177,24 +214,25 @@ class Image
             }
             $data = $item->get();
 
-            return static::getImageAs($contentType, $url, $data);
+            return static::getImageAs($contentType, $url, $data, defaultUrl: $defaultUrl, defaultData: $defaultData, client: $this->client);
         } catch (CacheException) {
             $this->useCache = false;
-            return static::getImageAs($contentType, $url, client: $this->client);
+            return static::getImageAs($contentType, $url, defaultUrl: $defaultUrl, defaultData: $defaultData, client: $this->client);
         }
     }
+    //endregion
 
     /**
      * @param string $url
+     * @param string|null $defaultUrl Fallback/default url if $url does not resolve
      * @return Response
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function getImageAsWebPFromUrl(string $url): Response
+    public function getImageAsWebPFromUrl(string $url, ?string $defaultUrl = null): Response
     {
-        return $this->getImageAsFromUrl($url, ContentType::imageWebP());
+        return $this->getImageAsFromUrl($url, ContentType::imageWebP(), defaultUrl: $defaultUrl);
     }
-    //endregion
 }

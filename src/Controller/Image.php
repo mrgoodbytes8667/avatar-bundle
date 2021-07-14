@@ -206,11 +206,29 @@ class Image
             $cacheKey = u($this->cachePrefix)->append('.getImageAsFromUrl.')->append(urlencode($url))->append('.contents')->toString();
             $item = $this->cache->getItem($cacheKey);
             if (!$item->isHit()) {
+                $saveCacheItem = false; // Only save if the url is retrieved successfully, do not cache the default
                 $response = $this->client->request('GET', $url);
+
+                if (static::isSuccess($response)) {
+                    $data = $response->getContent();
+                    $saveCacheItem = true;
+                } else {
+                    if (!empty($defaultUrl) && empty($defaultData)) {
+                        $response = $this->client->request('GET', $defaultUrl);
+                        $data = $response->getContent();
+                    } elseif (!empty($defaultData)) {
+                        $data = $defaultData;
+                    } else {
+                        // To simply throw the error
+                        $data = $response->getContent();
+                    }
+                }
+
                 $item->expiresAfter($this->expiresAfter);
-                $data = $response->getContent();
                 $item->set($data);
-                $this->cache->save($item);
+                if ($saveCacheItem) {
+                    $this->cache->save($item);
+                }
             }
             $data = $item->get();
 

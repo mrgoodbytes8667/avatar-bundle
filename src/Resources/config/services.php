@@ -7,8 +7,6 @@ use Bytes\AvatarBundle\Avatar\AvatarChain;
 use Bytes\AvatarBundle\Avatar\Avatars;
 use Bytes\AvatarBundle\Avatar\Gravatar;
 use Bytes\AvatarBundle\Avatar\Multiavatar;
-use Bytes\AvatarBundle\Controller\AvatarApiController;
-use Bytes\AvatarBundle\Controller\AvatarSelect2ApiController;
 use Bytes\AvatarBundle\Controller\GravatarApiController;
 use Bytes\AvatarBundle\Controller\Image;
 use Bytes\AvatarBundle\Controller\MultiAvatarApiController;
@@ -26,17 +24,6 @@ return static function (ContainerConfigurator $container) {
     $services = $container->services();
 
     //region Controllers
-    $services->set('bytes_avatar.controller.avatar_api', AvatarApiController::class)
-        ->args([
-            service('security.helper'), // Symfony\Component\Security\Core\Security
-            '', // $config['multiavatar']['salt']
-            '', // $config['multiavatar']['field']
-            '', // $config['null_user_replacement']
-            service('bytes_avatar.image'),
-        ])
-        ->alias(AvatarApiController::class, 'bytes_avatar.controller.avatar_api')
-        ->public();
-
     $services->set('bytes_avatar.controller.gravatar_api', GravatarApiController::class)
         ->args([
             '', // $config['null_user_replacement']
@@ -56,16 +43,6 @@ return static function (ContainerConfigurator $container) {
         ->call('setImage', [service('bytes_avatar.image')])
         ->call('setSecurity', [service('security.helper')])
         ->alias(MultiAvatarApiController::class, 'bytes_avatar.controller.multiavatar_api')
-        ->public();
-
-    $services->set('bytes_avatar.controller.avatar_select2_api', AvatarSelect2ApiController::class)
-        ->args([
-            service('security.helper'), // Symfony\Component\Security\Core\Security
-            service('liip_imagine.cache.manager'), // Liip\ImagineBundle\Imagine\Cache\CacheManager
-            service('bytes_avatar.cache'), // Bytes\AvatarBundle\Imaging\Cache
-            service('bytes_avatar.avatars'), // Bytes\AvatarBundle\Avatar\Avatars
-        ])
-        ->alias(AvatarSelect2ApiController::class, 'bytes_avatar.controller.avatar_select2_api')
         ->public();
     //endregion
 

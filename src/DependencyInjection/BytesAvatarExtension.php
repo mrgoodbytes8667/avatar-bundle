@@ -69,5 +69,8 @@ class BytesAvatarExtension extends Extension implements ExtensionInterface
         $definition->replaceArgument(2, $config['cache']['enable']);
         $definition->replaceArgument(3, $config['cache']['key']);
         $definition->replaceArgument(4, $config['cache']['duration']);
+
+        $definition = $container->getDefinition('bytes_avatar.controller.avatar_select2_api');
+        $definition->replaceArgument(4, $config['select2_filter']);
     }
 }

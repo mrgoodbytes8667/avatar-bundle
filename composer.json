@@ -12,7 +12,7 @@
         "liip/imagine-bundle": "^2.4",
         "mrgoodbytes8667/response-bundle": "^2.0.4",
         "multiavatar/multiavatar-php": "dev-feature/improve-implementation#8ca1c620bab28e81cf994eadbaeccd8e2ef14c49",
-        "sensio/framework-extra-bundle": "^5.1",
+        "sensio/framework-extra-bundle": "^5.1 | ^6.0",
         "symfony/messenger": "^5.3 | ^6.0",
         "symfony/polyfill-uuid": "^1.20",
         "symfony/validator": "^5.3 | ^6.0"

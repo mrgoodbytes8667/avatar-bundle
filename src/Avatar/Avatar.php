@@ -5,6 +5,7 @@ namespace Bytes\AvatarBundle\Avatar;
 
 
 use Bytes\AvatarBundle\Enums\AvatarSize;
+use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
 use Symfony\Component\String\UnicodeString;
 use function Symfony\Component\String\u;
 
@@ -38,6 +39,7 @@ abstract class Avatar implements AvatarInterface
      * @param null $user
      * @param AvatarSize|null $size
      * @return UnicodeString|string|null
+     * @throws NotLoadableException
      */
     abstract public function generatePath($user = null, ?AvatarSize $size = null): UnicodeString|string|null;
 }

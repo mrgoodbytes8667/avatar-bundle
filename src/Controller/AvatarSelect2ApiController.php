@@ -62,6 +62,10 @@ class AvatarSelect2ApiController
      */
     protected function getSelect(string $imageUrl, string $text, ?string $avatar)
     {
+        if(empty($imageUrl))
+        {
+            throw new NotLoadableException();
+        }
         $this->cache->warmup($imageUrl, [$this->filter]);
         return [
             'id' => $imageUrl,

@@ -36,8 +36,12 @@ class Image
     private DateInterval $fallbackExpiresAfter;
 
     /**
+     * @var HttpClientInterface
+     */
+    private HttpClientInterface $client;
+
+    /**
      * @param AdapterInterface $cache
-     * @param HttpClientInterface $client
      * @param bool $useSuccessCache
      * @param string $successCachePrefix
      * @param int $successCacheDuration
@@ -45,7 +49,7 @@ class Image
      * @param string $fallbackCachePrefix
      * @param int $fallbackCacheDuration
      */
-    public function __construct(private AdapterInterface $cache, private HttpClientInterface $client, private bool $useSuccessCache, private string $successCachePrefix, int $successCacheDuration, private bool $useFallbackCache, private string $fallbackCachePrefix, int $fallbackCacheDuration)
+    public function __construct(private AdapterInterface $cache, private bool $useSuccessCache, private string $successCachePrefix, int $successCacheDuration, private bool $useFallbackCache, private string $fallbackCachePrefix, int $fallbackCacheDuration)
     {
         $successExpiresAfter = DateInterval::createFromDateString(sprintf('%d minutes', $successCacheDuration));
         if (!$successExpiresAfter) {
@@ -204,6 +208,15 @@ class Image
     public static function getImageAsWebP(string $url, ?string $data = null, ?string $defaultUrl = null, ?string $defaultData = null, ?HttpClientInterface $client = null): Response
     {
         return static::getImageAs(ContentType::imageWebP(), $url, $data, defaultUrl: $defaultUrl, defaultData: $defaultData, client: $client);
+    }
+
+    /**
+     * @param HttpClientInterface $client
+     * @return void
+     */
+    public function setClient(HttpClientInterface $client)
+    {
+        $this->client = $client;
     }
 
     /**

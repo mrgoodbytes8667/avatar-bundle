@@ -121,7 +121,6 @@ return static function (ContainerConfigurator $container) {
     $services->set('bytes_avatar.image', Image::class)
         ->args([
             service('cache.app'),
-            service('http_client'),
             true,
             '',
             0,
@@ -129,6 +128,7 @@ return static function (ContainerConfigurator $container) {
             '',
             0
         ])
+        ->call('setClient', [service('http_client')])
         ->lazy()
         ->alias(Image::class, 'bytes_avatar.image')
         ->public();

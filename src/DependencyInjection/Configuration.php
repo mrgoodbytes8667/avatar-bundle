@@ -29,25 +29,54 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('cache')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('key')
-                            ->defaultValue('bytes_avatar')
-                            ->validate()
-                                ->always()->then(function ($value) {
-                                    $key = u($value);
-                                    if($key->endsWith('.'))
-                                    {
-                                        $key = $key->beforeLast('.');
-                                    }
-                                    return $key->toString();
-                                })
+                        ->arrayNode('success')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('key')
+                                    ->defaultValue('bytes_avatar')
+                                    ->validate()
+                                        ->always()->then(function ($value) {
+                                            $key = u($value);
+                                            if($key->endsWith('.'))
+                                            {
+                                                $key = $key->beforeLast('.');
+                                            }
+                                            return $key->toString();
+                                        })
+                                    ->end()
+                                ->end()
+                                ->integerNode('duration')
+                                    ->min(1)
+                                    ->defaultValue(15)
+                                    ->info('Length of time (in minutes) to cache a remote image temporarily when instantiating the cache')
+                                ->end()
+                                ->booleanNode('enable')->defaultTrue()->info('Cache remote URL responses for a short time to prevent repeated calls to remote sites')->end()
                             ->end()
                         ->end()
-                        ->integerNode('duration')
-                            ->min(1)
-                            ->defaultValue(15)
-                            ->info('Length of time (in minutes) to cache a remote image temporarily when instantiating the cache')
+                        ->arrayNode('fallback')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('key')
+                                    ->defaultValue('bytes_avatar')
+                                    ->validate()
+                                        ->always()->then(function ($value) {
+                                            $key = u($value);
+                                            if($key->endsWith('.'))
+                                            {
+                                                $key = $key->beforeLast('.');
+                                            }
+                                            return $key->toString();
+                                        })
+                                    ->end()
+                                ->end()
+                                ->integerNode('duration')
+                                    ->min(1)
+                                    ->defaultValue(5)
+                                    ->info('Length of time (in minutes) to cache a remote image temporarily when instantiating the cache')
+                                ->end()
+                                ->booleanNode('enable')->defaultTrue()->info('Cache remote URL responses for a short time to prevent repeated calls to remote sites')->end()
+                            ->end()
                         ->end()
-                        ->booleanNode('enable')->defaultTrue()->info('Cache remote URL responses for a short time to prevent repeated calls to remote sites')->end()
                     ->end()
                 ->end()
                 ->arrayNode('gravatar')

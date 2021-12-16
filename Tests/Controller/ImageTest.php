@@ -18,6 +18,7 @@ use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class ImageTest
@@ -35,12 +36,26 @@ class ImageTest extends TestCase
     {
         $cache = $this->getMockBuilder(AdapterInterface::class)->getMock();
         $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
-        $image = new Image($cache, $client, false, '', 1);
+        $image = $this->setupImage($cache, $client, false, false);
 
         $response = $image->getImageAsPngFromUrl($this->faker->imageUrl());
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(ContentType::imagePng(), $response->headers->get('Content-Type'));
+    }
+
+    /**
+     * @param AdapterInterface $cache
+     * @param HttpClientInterface $client
+     * @param bool $useSuccessCache
+     * @param bool $useFallbackCache
+     * @return Image
+     */
+    private function setupImage($cache, HttpClientInterface $client, bool $useSuccessCache, bool $useFallbackCache): Image
+    {
+        $image = new Image($cache, $useSuccessCache, '', 1, $useFallbackCache, '', 1);
+        $image->setClient($client);
+        return $image;
     }
 
     /**
@@ -51,7 +66,7 @@ class ImageTest extends TestCase
     {
         $cache = $this->getMockBuilder(AdapterInterface::class)->getMock();
         $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
-        $image = new Image($cache, $client, false, '', 1);
+        $image = $this->setupImage($cache, $client, false, false);
 
         $response = $image->getImageAsWebPFromUrl($this->faker->imageUrl());
 
@@ -70,7 +85,7 @@ class ImageTest extends TestCase
             ->willReturn($item);
         $url = $this->getSampleImage();
         $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
-        $image = new Image($cache, $client, true, '', 1);
+        $image = $this->setupImage($cache, $client, true, true);
 
         $response = $image->getImageAsPngFromUrl($this->faker->imageUrl());
 
@@ -97,7 +112,7 @@ class ImageTest extends TestCase
             ->willThrowException(new InvalidArgumentException());
         $url = $this->getSampleImage();
         $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
-        $image = new Image($cache, $client, true, '', 1);
+        $image = $this->setupImage($cache, $client, true, true);
 
         $response = $image->getImageAsPngFromUrl($this->faker->imageUrl());
 
@@ -173,7 +188,7 @@ class ImageTest extends TestCase
         $cache = $this->getMockBuilder(AdapterInterface::class)->getMock();
         $url = $this->getSampleImage('txt');
         $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
-        $image = new Image($cache, $client, false, '', 1);
+        $image = $this->setupImage($cache, $client, false, false);
 
         $image->getImageAsPngFromUrl($this->faker->imageUrl());
     }
@@ -183,8 +198,10 @@ class ImageTest extends TestCase
      */
     public function provideSampleImages()
     {
-        yield [$this->getSampleImage('png')];
-        yield [$this->getSampleImage('jpg')];
+        yield 'png' => [$this->getSampleImage('png')];
+        yield 'jpg' => [$this->getSampleImage('jpg')];
+        yield 'gif' => [$this->getSampleImage('gif')];
+        yield 'webp' => [$this->getSampleImage('webp')];
     }
 
     /**
@@ -196,7 +213,7 @@ class ImageTest extends TestCase
     public function testGetImageAsWithInvalidContentType()
     {
         $this->expectException(UnsupportedMediaTypeHttpException::class);
-        $this->expectExceptionMessage('"getImageAs" can only accept content types of jpeg, png, or webp.');
+        $this->expectExceptionMessage('"getImageAs" can only accept content types of jpeg, png, gif, or webp.');
         Image::getImageAs(ContentType::json(), $this->faker->imageUrl());
     }
 }

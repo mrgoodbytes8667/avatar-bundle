@@ -3,10 +3,9 @@ name: release
 on:
   push:
     tags:
-      - v*
-      - '!v*ALPHA*'
-      - '!v*BETA*'
-      - '!v*RC*'
+      - 'v*ALPHA*'
+      - 'v*BETA*'
+      - 'v*RC*'
   workflow_dispatch:
 
 jobs:
@@ -15,3 +14,4 @@ jobs:
     with:
       phpUnitVersion: 9.5
       setupPhpExtensions: ", imagick"
+      prerelease: true

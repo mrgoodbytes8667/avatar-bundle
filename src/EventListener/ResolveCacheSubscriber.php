@@ -6,7 +6,6 @@ namespace Bytes\AvatarBundle\EventListener;
 
 use Bytes\AvatarBundle\Event\ResolveCacheEvent;
 use Exception;
-use Liip\ImagineBundle\Async\ResolveCacheProcessor;
 use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
 use Liip\ImagineBundle\Imagine\Filter\FilterManager;
 use Liip\ImagineBundle\Service\FilterService;
@@ -69,8 +68,6 @@ class ResolveCacheSubscriber implements MessageHandlerInterface, EventSubscriber
     /**
      * @param ResolveCacheEvent $event
      * @return ResolveCacheEvent
-     *
-     * @see ResolveCacheProcessor
      */
     public function onResolveCache(ResolveCacheEvent $event): ResolveCacheEvent
     {

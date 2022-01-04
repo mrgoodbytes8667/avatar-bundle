@@ -71,8 +71,8 @@ class Avatars
         {
             if($generator::supportsMultipleSizes())
             {
-                foreach (AvatarSize::toValues() as $size) {
-                    $return[] = $generator->generate($user, AvatarSize::from($size));
+                foreach (AvatarSize::cases() as $size) {
+                    $return[] = $generator->generate($user, $size);
                 }
             } else {
                 $return[] = $generator->generate($user);

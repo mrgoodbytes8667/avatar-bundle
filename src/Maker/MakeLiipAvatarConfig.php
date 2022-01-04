@@ -183,7 +183,7 @@ class MakeLiipAvatarConfig extends AbstractMaker
         }
 
         $gravatarSizes = [];
-        foreach (AvatarSize::toValues() as $size) {
+        foreach (AvatarSize::cases() as $size) {
             $gravatarSizes[] = ['x' => $size, 'y' => $size];
         }
 

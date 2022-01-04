@@ -5,7 +5,6 @@ namespace Bytes\AvatarBundle\Event;
 
 
 use DateTimeImmutable;
-use Liip\ImagineBundle\Async\Commands;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -27,7 +26,7 @@ class ResolveCacheEvent extends Event
      * @param string $command
      * @param DateTimeImmutable|null $createdAt
      */
-    public function __construct(private string $path, private ?array $filters = null, private bool $force = false, private string $command = Commands::RESOLVE_CACHE, private ?DateTimeImmutable $createdAt = null)
+    public function __construct(private string $path, private ?array $filters = null, private bool $force = false, private string $command = 'liip_imagine_resolve_cache', private ?DateTimeImmutable $createdAt = null)
     {
         if (empty($createdAt)) {
             $this->createdAt = new DateTimeImmutable();

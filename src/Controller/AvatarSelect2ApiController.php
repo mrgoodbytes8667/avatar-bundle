@@ -42,7 +42,7 @@ class AvatarSelect2ApiController
         $content = [];
         foreach ($this->avatars->getAllTypes() as $type => $generator) {
             try {
-                $results = $this->getSelect($generator->generate($user, AvatarSize::s300()), u($type)->title(), $user->getAvatar());
+                $results = $this->getSelect($generator->generate($user, AvatarSize::s300), u($type)->title(), $user->getAvatar());
                 $content['results'][] = $results;
             } catch (NotLoadableException) {
             }

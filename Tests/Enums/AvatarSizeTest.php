@@ -20,11 +20,6 @@ class AvatarSizeTest extends TestCase
     public function testEnum($label, $value)
     {
         $enum = AvatarSize::from($value);
-        $this->assertEquals($label, $enum->label);
-        $this->assertEquals($value, $enum->value);
-
-        $enum = AvatarSize::from($label);
-        $this->assertEquals($label, $enum->label);
         $this->assertEquals($value, $enum->value);
     }
 
@@ -41,7 +36,7 @@ class AvatarSizeTest extends TestCase
         $output = $serializer->serialize($enum, 'json');
 
         $this->assertEquals(json_encode([
-            'label' => $label,
+            'name' => $label,
             'value' => $value
         ]), $output);
     }
@@ -59,15 +54,24 @@ class AvatarSizeTest extends TestCase
      */
     public function testInvalidValue()
     {
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(\TypeError::class);
         AvatarSize::from('abc123');
     }
 
     /**
-     *
+     * @group legacy
+     * @return void
      */
-    public function testCoverage()
+    public function testSpatieEnumMethods()
     {
-        $this->coverEnum(AvatarSize::class);
+        $this->assertEquals(AvatarSize::s20, AvatarSize::s20());
+        $this->assertEquals(AvatarSize::s30, AvatarSize::s30());
+        $this->assertEquals(AvatarSize::s80, AvatarSize::s80());
+        $this->assertEquals(AvatarSize::s99, AvatarSize::s99());
+        $this->assertEquals(AvatarSize::s128, AvatarSize::s128());
+        $this->assertEquals(AvatarSize::s157, AvatarSize::s157());
+        $this->assertEquals(AvatarSize::s253, AvatarSize::s253());
+        $this->assertEquals(AvatarSize::s277, AvatarSize::s277());
+        $this->assertEquals(AvatarSize::s300, AvatarSize::s300());
     }
 }

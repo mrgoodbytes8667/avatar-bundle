@@ -40,7 +40,7 @@ class MultiAvatarApiController
      */
     public function __construct(private HttpClientInterface $client, private string $multiAvatarSalt = '', private string $multiAvatarField = '', private string $nullUserReplacement = '')
     {
-        $this->avatarSize = AvatarSize::s300()->value;
+        $this->avatarSize = AvatarSize::s300->value;
     }
 
     /**

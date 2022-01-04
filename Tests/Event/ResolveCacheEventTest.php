@@ -6,7 +6,6 @@ use Bytes\AvatarBundle\Event\ResolveCacheEvent;
 use Bytes\Common\Faker\TestFakerTrait;
 use DateTimeImmutable;
 use Generator;
-use Liip\ImagineBundle\Async\Commands;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -134,7 +133,7 @@ class ResolveCacheEventTest extends TestCase
         $event = ResolveCacheEvent::new($path, $filters, $force);
         $newCommand = $this->faker->word();
 
-        $this->assertEquals(Commands::RESOLVE_CACHE, $event->getCommand());
+        $this->assertEquals('liip_imagine_resolve_cache', $event->getCommand());
         $this->assertInstanceOf(ResolveCacheEvent::class, $event->setCommand($newCommand));
         $this->assertEquals($newCommand, $event->getCommand());
     }

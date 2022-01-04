@@ -4,12 +4,13 @@
     "description": "A Symfony bundle for avatar caching",
     "license": "CC-BY-NC-4.0",
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "ext-gd": "*",
         "ext-imagick": "*",
         "ext-json": "*",
         "doctrine/orm": "^2.8",
         "liip/imagine-bundle": "^2.4",
+        "mrgoodbytes8667/enum-serializer-bundle": "^1.6",
         "mrgoodbytes8667/response-bundle": "^3.1",
         "multiavatar/multiavatar-php": "dev-feature/improve-implementation#8ca1c620bab28e81cf994eadbaeccd8e2ef14c49",
         "sensio/framework-extra-bundle": "^5.1 | ^6.0",
@@ -32,7 +33,10 @@
         }
     ],
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
     },
     "conflict": {
         "doctrine/annotations": "<1.11.1",

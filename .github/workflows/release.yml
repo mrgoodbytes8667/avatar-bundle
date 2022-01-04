@@ -11,7 +11,7 @@ on:
 
 jobs:
   release:
-    uses: mrgoodbytes8667/workflows/.github/workflows/release.yml@main
+    uses: mrgoodbytes8667/workflows/.github/workflows/release.yml@php8.0-8.1
     with:
       phpUnitVersion: 9.5
       setupPhpExtensions: ", imagick"

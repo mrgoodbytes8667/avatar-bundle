@@ -48,8 +48,11 @@ class Image
      * @param bool $useFallbackCache
      * @param string $fallbackCachePrefix
      * @param int $fallbackCacheDuration
+     * @param int $responseSuccessCachedDuration
+     * @param int $responseSuccessInitialDuration
+     * @param int $responseFallbackDuration
      */
-    public function __construct(private AdapterInterface $cache, private bool $useSuccessCache, private string $successCachePrefix, int $successCacheDuration, private bool $useFallbackCache, private string $fallbackCachePrefix, int $fallbackCacheDuration)
+    public function __construct(private AdapterInterface $cache, private bool $useSuccessCache, private string $successCachePrefix, int $successCacheDuration, private bool $useFallbackCache, private string $fallbackCachePrefix, int $fallbackCacheDuration, private int $responseSuccessCachedDuration, private int $responseSuccessInitialDuration, private int $responseFallbackDuration)
     {
         $successExpiresAfter = DateInterval::createFromDateString(sprintf('%d minutes', $successCacheDuration));
         if (!$successExpiresAfter) {
@@ -64,6 +67,9 @@ class Image
         } else {
             $this->fallbackExpiresAfter = $fallbackExpiresAfter;
         }
+        $this->responseSuccessCachedDuration *= 60;
+        $this->responseSuccessInitialDuration *= 60;
+        $this->responseFallbackDuration *= 60;
     }
 
     /**
@@ -259,7 +265,7 @@ class Image
                 $responseCallable = function ($response) {
                     /** @var Response $response */
                     return $response->setPublic()
-                        ->setMaxAge(15 * 60);
+                        ->setMaxAge($this->responseSuccessCachedDuration);
                 };
             } else {
                 $saveCacheItem = false; // Only save if the url is retrieved successfully, do not cache the default
@@ -271,7 +277,7 @@ class Image
                     $responseCallable = function ($response) {
                         /** @var Response $response */
                         return $response->setPublic()
-                            ->setMaxAge(15 * 60);
+                            ->setMaxAge($this->responseSuccessInitialDuration);
                     };
                 } else {
                     if (!empty($defaultUrl) && empty($defaultData)) {
@@ -290,7 +296,7 @@ class Image
                             $responseCallable = function ($response) {
                                 /** @var Response $response */
                                 return $response->setPublic()
-                                    ->setMaxAge(5 * 60);
+                                    ->setMaxAge($this->responseFallbackDuration);
                             };
                         }
                         $data = $item->get();

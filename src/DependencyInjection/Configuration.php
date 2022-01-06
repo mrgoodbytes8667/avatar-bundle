@@ -31,10 +31,8 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->arrayNode('success')
                             ->setDeprecated('mrgoodbytes8667/avatar-bundle', '0.7.0', 'The child node "%node%" at path "%path%" is deprecated. Please replace with the new "local-cache" node.')
-                            ->addDefaultsIfNotSet()
                             ->children()
                                 ->scalarNode('key')
-                                    ->defaultValue('bytes_avatar')
                                     ->validate()
                                         ->always()->then(function ($value) {
                                             $key = u($value);
@@ -48,18 +46,15 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                                 ->integerNode('duration')
                                     ->min(1)
-                                    ->defaultValue(15)
                                     ->info('Length of time (in minutes) to cache a remote image temporarily when instantiating the cache')
                                 ->end()
-                                ->booleanNode('enable')->defaultTrue()->info('Cache remote URL responses for a short time to prevent repeated calls to remote sites')->end()
+                                ->booleanNode('enable')->info('Cache remote URL responses for a short time to prevent repeated calls to remote sites')->end()
                             ->end()
                         ->end()
                         ->arrayNode('fallback')
                             ->setDeprecated('mrgoodbytes8667/avatar-bundle', '0.7.0', 'The child node "%node%" at path "%path%" is deprecated. Please replace with the new "local-cache" node.')
-                            ->addDefaultsIfNotSet()
                             ->children()
                                 ->scalarNode('key')
-                                    ->defaultValue('bytes_avatar')
                                     ->validate()
                                         ->always()->then(function ($value) {
                                             $key = u($value);
@@ -73,10 +68,9 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                                 ->integerNode('duration')
                                     ->min(1)
-                                    ->defaultValue(5)
                                     ->info('Length of time (in minutes) to cache a remote image temporarily when instantiating the cache')
                                 ->end()
-                                ->booleanNode('enable')->defaultTrue()->info('Cache remote URL responses for a short time to prevent repeated calls to remote sites')->end()
+                                ->booleanNode('enable')->info('Cache remote URL responses for a short time to prevent repeated calls to remote sites')->end()
                             ->end()
                         ->end()
 

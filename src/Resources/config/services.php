@@ -126,7 +126,10 @@ return static function (ContainerConfigurator $container) {
             0,
             true,
             '',
-            0
+            0,
+            0,
+            0,
+            0,
         ])
         ->call('setClient', [service('http_client')])
         ->lazy()

@@ -53,7 +53,7 @@ class ImageTest extends TestCase
      */
     private function setupImage($cache, HttpClientInterface $client, bool $useSuccessCache, bool $useFallbackCache): Image
     {
-        $image = new Image($cache, $useSuccessCache, '', 1, $useFallbackCache, '', 1);
+        $image = new Image($cache, $useSuccessCache, '', 1, $useFallbackCache, '', 1, 1, 1, 1);
         $image->setClient($client);
         return $image;
     }

@@ -148,13 +148,15 @@ return static function (ContainerConfigurator $container) {
     //endregion
 
     //region Subscribers
-    $services->set('bytes_avatar.subscriber.resolve_cache', ResolveCacheSubscriber::class)
-        ->args([
-            service('liip_imagine.filter.manager'),
-            service('liip_imagine.service.filter'),
-            service('event_dispatcher'),
-        ])
-        ->tag('kernel.event_subscriber')
-        ->tag('messenger.message_handler');
+    if (interface_exists(\Symfony\Component\Messenger\Handler\MessageHandlerInterface::class)) {
+        $services->set('bytes_avatar.subscriber.resolve_cache', ResolveCacheSubscriber::class)
+            ->args([
+                service('liip_imagine.filter.manager'),
+                service('liip_imagine.service.filter'),
+                service('event_dispatcher'),
+            ])
+            ->tag('kernel.event_subscriber')
+            ->tag('messenger.message_handler');
+    }
     //endregion
 };

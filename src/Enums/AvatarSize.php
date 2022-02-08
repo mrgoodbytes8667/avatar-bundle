@@ -4,12 +4,13 @@
 namespace Bytes\AvatarBundle\Enums;
 
 
-use Bytes\EnumSerializerBundle\Enums\EnumTrait;
+use Bytes\EnumSerializerBundle\Enums\BackedEnumInterface;
+use Bytes\EnumSerializerBundle\Enums\BackedEnumTrait;
 use JetBrains\PhpStorm\Deprecated;
 
-enum AvatarSize: int
+enum AvatarSize: int implements BackedEnumInterface
 {
-    use EnumTrait;
+    use BackedEnumTrait;
 
     case s20 = 20;
     case s30 = 30;

@@ -41,7 +41,7 @@ class ImageTest extends TestCase
         $response = $image->getImageAsPngFromUrl($this->faker->imageUrl());
 
         $this->assertInstanceOf(Response::class, $response);
-        $this->assertEquals(ContentType::imagePng(), $response->headers->get('Content-Type'));
+        $this->assertEquals(ContentType::imagePng->value, $response->headers->get('Content-Type'));
     }
 
     /**
@@ -71,7 +71,7 @@ class ImageTest extends TestCase
         $response = $image->getImageAsWebPFromUrl($this->faker->imageUrl());
 
         $this->assertInstanceOf(Response::class, $response);
-        $this->assertEquals(ContentType::imageWebP(), $response->headers->get('Content-Type'));
+        $this->assertEquals(ContentType::imageWebP->value, $response->headers->get('Content-Type'));
     }
 
     /**
@@ -90,7 +90,7 @@ class ImageTest extends TestCase
         $response = $image->getImageAsPngFromUrl($this->faker->imageUrl());
 
         $this->assertInstanceOf(Response::class, $response);
-        $this->assertEquals(ContentType::imagePng(), $response->headers->get('Content-Type'));
+        $this->assertEquals(ContentType::imagePng->value, $response->headers->get('Content-Type'));
     }
 
     /**
@@ -117,7 +117,7 @@ class ImageTest extends TestCase
         $response = $image->getImageAsPngFromUrl($this->faker->imageUrl());
 
         $this->assertInstanceOf(Response::class, $response);
-        $this->assertEquals(ContentType::imagePng(), $response->headers->get('Content-Type'));
+        $this->assertEquals(ContentType::imagePng->value, $response->headers->get('Content-Type'));
     }
 
     /**
@@ -132,7 +132,7 @@ class ImageTest extends TestCase
         $this->expectException(ClientExceptionInterface::class);
         $client = new MockHttpClient(new MockResponse('', Response::HTTP_NOT_FOUND));
 
-        $response = Image::getImageAs(ContentType::imagePng(), url: $this->faker->imageUrl(), client: $client);
+        $response = Image::getImageAs(ContentType::imagePng, url: $this->faker->imageUrl(), client: $client);
     }
 
     /**
@@ -146,10 +146,10 @@ class ImageTest extends TestCase
         $url = $this->getSampleImage();
         $client = new MockHttpClient([new MockResponse('', Response::HTTP_NOT_FOUND), new MockResponse(file_get_contents($url))]);
 
-        $response = Image::getImageAs(ContentType::imagePng(), url: $this->faker->imageUrl(), defaultUrl: $this->faker->imageUrl(), client: $client);
+        $response = Image::getImageAs(ContentType::imagePng, url: $this->faker->imageUrl(), defaultUrl: $this->faker->imageUrl(), client: $client);
 
         $this->assertInstanceOf(Response::class, $response);
-        $this->assertEquals(ContentType::imagePng(), $response->headers->get('Content-Type'));
+        $this->assertEquals(ContentType::imagePng->value, $response->headers->get('Content-Type'));
     }
 
     /**
@@ -162,7 +162,7 @@ class ImageTest extends TestCase
         $response = Image::getImageAsPng($this->faker->imageUrl(), client: $client);
 
         $this->assertInstanceOf(Response::class, $response);
-        $this->assertEquals(ContentType::imagePng(), $response->headers->get('Content-Type'));
+        $this->assertEquals(ContentType::imagePng->value, $response->headers->get('Content-Type'));
     }
 
     /**
@@ -175,7 +175,7 @@ class ImageTest extends TestCase
         $response = Image::getImageAsWebP($this->faker->imageUrl(), client: $client);
 
         $this->assertInstanceOf(Response::class, $response);
-        $this->assertEquals(ContentType::imageWebP(), $response->headers->get('Content-Type'));
+        $this->assertEquals(ContentType::imageWebP->value, $response->headers->get('Content-Type'));
     }
 
     /**
@@ -214,6 +214,6 @@ class ImageTest extends TestCase
     {
         $this->expectException(UnsupportedMediaTypeHttpException::class);
         $this->expectExceptionMessage('"getImageAs" can only accept content types of jpeg, png, gif, or webp.');
-        Image::getImageAs(ContentType::json(), $this->faker->imageUrl());
+        Image::getImageAs(ContentType::json, $this->faker->imageUrl());
     }
 }

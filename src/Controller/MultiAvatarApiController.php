@@ -55,13 +55,13 @@ class MultiAvatarApiController
      */
     public function multiAvatarPngAction(?UserInterface $user, int $size = 80): Response
     {
-        return $this->multiAvatar($user, $this->avatarSize, ContentType::imagePng());
+        return $this->multiAvatar($user, $this->avatarSize, ContentType::imagePng);
     }
 
     /**
      * @param UserInterface|null $user
      * @param int $size
-     * @param ContentType $contentType = [ContentType::imageJpg(), ContentType::imagePng(), ContentType::imageWebP()][$any]
+     * @param ContentType $contentType = [ContentType::imageJpg, ContentType::imagePng, ContentType::imageWebP][$any]
      * @return Response
      * @throws ClientExceptionInterface
      * @throws ImagickException
@@ -86,7 +86,7 @@ class MultiAvatarApiController
     /**
      * @param string $url
      * @param int $size
-     * @param ContentType $contentType = [ContentType::imageJpg(), ContentType::imagePng(), ContentType::imageWebP()][$any]
+     * @param ContentType $contentType = [ContentType::imageJpg, ContentType::imagePng, ContentType::imageWebP][$any]
      * @return Response
      * @throws ClientExceptionInterface
      * @throws ImagickException
@@ -121,6 +121,6 @@ class MultiAvatarApiController
      */
     public function multiAvatarWebPAction(?UserInterface $user, int $size = 80): Response
     {
-        return $this->multiAvatar($user, $this->avatarSize, ContentType::imageWebP());
+        return $this->multiAvatar($user, $this->avatarSize, ContentType::imageWebP);
     }
 }

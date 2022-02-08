@@ -40,7 +40,7 @@ class GravatarApiController
      */
     public function gravatarPngAction(?UserInterface $user, int $size = 80): Response
     {
-        return $this->gravatar($user, $size, ContentType::imagePng());
+        return $this->gravatar($user, $size, ContentType::imagePng);
     }
 
     /**
@@ -88,6 +88,6 @@ class GravatarApiController
      */
     public function gravatarWebPAction(?UserInterface $user, int $size = 80): Response
     {
-        return $this->gravatar($user, $size, ContentType::imageWebP());
+        return $this->gravatar($user, $size, ContentType::imageWebP);
     }
 }

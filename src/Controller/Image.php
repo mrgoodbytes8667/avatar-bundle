@@ -86,11 +86,11 @@ class Image
      */
     public static function getImageAsPng(string $url, ?string $data = null, ?string $defaultUrl = null, ?string $defaultData = null, ?HttpClientInterface $client = null): Response
     {
-        return static::getImageAs(ContentType::imagePng(), $url, $data, defaultUrl: $defaultUrl, defaultData: $defaultData, client: $client);
+        return static::getImageAs(ContentType::imagePng, $url, $data, defaultUrl: $defaultUrl, defaultData: $defaultData, client: $client);
     }
 
     /**
-     * @param ContentType $contentType = [ContentType::imageJpg(), ContentType::imagePng(), ContentType::imageWebP()][$any]
+     * @param ContentType $contentType = [ContentType::imageJpg, ContentType::imagePng, ContentType::imageWebP][$any]
      * @param string $url
      * @param string|null $data
      * @param string|null $defaultUrl Fallback/default url if $url does not resolve, ignored if data or defaultData is provided
@@ -105,7 +105,7 @@ class Image
      */
     public static function getImageAs(ContentType $contentType, string $url, ?string $data = null, ?string $defaultUrl = null, ?string $defaultData = null, ?HttpClientInterface $client = null, ?callable $responseCallback = null): Response
     {
-        if (!$contentType->equals(ContentType::imageJpg(), ContentType::imagePng(), ContentType::imageGif(), ContentType::imageWebP())) {
+        if (!$contentType->equals(ContentType::imageJpg, ContentType::imagePng, ContentType::imageGif, ContentType::imageWebP)) {
             throw new UnsupportedMediaTypeHttpException(sprintf('"%s" can only accept content types of jpeg, png, gif, or webp.', __FUNCTION__));
         }
         $fallback = false;
@@ -145,13 +145,13 @@ class Image
         if ($im !== false) {
             ob_start();
             switch ($contentType) {
-                case ContentType::imageJpg():
+                case ContentType::imageJpg:
                     imagejpeg($im);
                     break;
-                case ContentType::imagePng():
+                case ContentType::imagePng:
                     imagepng($im);
                     break;
-                case ContentType::imageGif():
+                case ContentType::imageGif:
                     imagegif($im);
                     break;
                 default:
@@ -213,7 +213,7 @@ class Image
      */
     public static function getImageAsWebP(string $url, ?string $data = null, ?string $defaultUrl = null, ?string $defaultData = null, ?HttpClientInterface $client = null): Response
     {
-        return static::getImageAs(ContentType::imageWebP(), $url, $data, defaultUrl: $defaultUrl, defaultData: $defaultData, client: $client);
+        return static::getImageAs(ContentType::imageWebP, $url, $data, defaultUrl: $defaultUrl, defaultData: $defaultData, client: $client);
     }
 
     /**
@@ -236,14 +236,14 @@ class Image
      */
     public function getImageAsPngFromUrl(string $url, ?string $defaultUrl = null): Response
     {
-        return $this->getImageAsFromUrl($url, ContentType::imagePng(), defaultUrl: $defaultUrl);
+        return $this->getImageAsFromUrl($url, ContentType::imagePng, defaultUrl: $defaultUrl);
     }
 
     /**
      * @param string $url
      * @param string|null $defaultUrl Fallback/default url if $url does not resolve, ignored if data or defaultData is provided
      * @param string|null $defaultData Fallback/default data if $url does not resolve, ignored if data is provided
-     * @param ContentType $contentType = [ContentType::imageJpg(), ContentType::imagePng(), ContentType::imageWebP()][$any]
+     * @param ContentType $contentType = [ContentType::imageJpg, ContentType::imagePng, ContentType::imageWebP][$any]
      * @return Response
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
@@ -253,7 +253,7 @@ class Image
     public function getImageAsFromUrl(string $url, ContentType $contentType, ?string $defaultUrl = null, ?string $defaultData = null): Response
     {
         $responseCallable = null;
-        $contentType ??= ContentType::imagePng();
+        $contentType ??= ContentType::imagePng;
         if (!$this->useSuccessCache) {
             return static::getImageAs($contentType, $url, defaultUrl: $defaultUrl, defaultData: $defaultData, client: $this->client);
         }
@@ -334,6 +334,6 @@ class Image
      */
     public function getImageAsWebPFromUrl(string $url, ?string $defaultUrl = null): Response
     {
-        return $this->getImageAsFromUrl($url, ContentType::imageWebP(), defaultUrl: $defaultUrl);
+        return $this->getImageAsFromUrl($url, ContentType::imageWebP, defaultUrl: $defaultUrl);
     }
 }

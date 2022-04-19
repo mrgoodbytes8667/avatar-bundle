@@ -34,3 +34,11 @@ jobs:
       phpUnitVersion: 9.5
       symfony: 6.0
       setupPhpExtensions: ", imagick"
+
+  symfony61:
+    uses: mrgoodbytes8667/workflows/.github/workflows/run-tests-by-version.yml@php8.1
+    with:
+      phpUnitVersion: 9.5
+      symfony: 6.1
+      setupPhpExtensions: ", imagick"
+      minStability: 'dev'

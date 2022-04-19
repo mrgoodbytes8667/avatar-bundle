@@ -194,6 +194,22 @@ class ImageTest extends TestCase
     }
 
     /**
+     *
+     */
+    public function testGetImageAsPngInvalidFileSymfony61()
+    {
+        $this->expectWarning();
+        $this->expectWarningMessage('Data is not in a recognized format');
+        //$this->expectException(UnsupportedMediaTypeHttpException::class);
+        $cache = $this->getMockBuilder(AdapterInterface::class)->getMock();
+        $url = $this->getSampleImage('txt');
+        $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
+        $image = $this->setupImage($cache, $client, false, false);
+
+        $image->getImageAsPngFromUrl($this->faker->imageUrl());
+    }
+
+    /**
      * @return Generator
      */
     public function provideSampleImages()

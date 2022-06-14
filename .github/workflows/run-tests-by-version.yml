@@ -41,4 +41,3 @@ jobs:
       phpUnitVersion: 9.5
       symfony: 6.1
       setupPhpExtensions: ", imagick"
-      minStability: 'dev'

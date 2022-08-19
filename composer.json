@@ -10,7 +10,7 @@
         "ext-json": "*",
         "doctrine/orm": "^2.8",
         "liip/imagine-bundle": "^2.4",
-        "mrgoodbytes8667/enum-serializer-bundle": "^2.0",
+        "mrgoodbytes8667/enum-serializer-bundle": "^3.0",
         "mrgoodbytes8667/response-bundle": "^3.2 | ^4.0 | ^5.0",
         "multiavatar/multiavatar-php": "dev-feature/improve-implementation#8ca1c620bab28e81cf994eadbaeccd8e2ef14c49",
         "sensio/framework-extra-bundle": "^5.1 | ^6.0",

@@ -111,7 +111,7 @@ class Image
         $fallback = false;
         if (empty($data)) {
             $client ??= HttpClient::create();
-            $response = $client->request('GET', $url);
+            $response = $client->request('GET', $url, ['timeout' => 5, 'max_duration' => 60]);
             if (static::isSuccess($response)) {
                 $data = $response->getContent();
                 if (is_null($responseCallback)) {
@@ -124,7 +124,7 @@ class Image
             } else {
                 $fallback = true;
                 if (!empty($defaultUrl) && empty($defaultData)) {
-                    $response = $client->request('GET', $defaultUrl);
+                    $response = $client->request('GET', $defaultUrl, ['timeout' => 5, 'max_duration' => 60]);
                     $data = $response->getContent();
                 } elseif (!empty($defaultData)) {
                     $data = $defaultData;
@@ -269,7 +269,7 @@ class Image
                 };
             } else {
                 $saveCacheItem = false; // Only save if the url is retrieved successfully, do not cache the default
-                $response = $this->client->request('GET', $url);
+                $response = $this->client->request('GET', $url, ['timeout' => 5, 'max_duration' => 60]);
 
                 if (static::isSuccess($response)) {
                     $data = $response->getContent();
@@ -284,7 +284,7 @@ class Image
                         $defaultCacheKey = u($this->fallbackCachePrefix)->append('.getImageAsFromUrl.')->append(urlencode($defaultUrl))->append('.contents')->toString();
                         $defaultItem = $this->cache->getItem($defaultCacheKey);
                         if (!$defaultItem->isHit()) {
-                            $response = $this->client->request('GET', $defaultUrl);
+                            $response = $this->client->request('GET', $defaultUrl, ['timeout' => 5, 'max_duration' => 60]);
                             $data = $response->getContent();
                             //$defaultItem->expiresAfter($this->expiresAfter);
                             $defaultItem->expiresAfter($this->fallbackExpiresAfter);

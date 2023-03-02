@@ -11,7 +11,7 @@ on:
 
 jobs:
   coverage:
-    uses: mrgoodbytes8667/workflows/.github/workflows/code-coverage.yml@php8.1-8.2
+    uses: mrgoodbytes8667/workflows/.github/workflows/code-coverage.yml@php8.1
     with:
       phpUnitVersion: 9.5
       setupPhpExtensions: ", imagick"

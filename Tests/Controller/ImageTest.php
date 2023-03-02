@@ -97,7 +97,7 @@ class ImageTest extends TestCase
      * @param string $extension
      * @return string
      */
-    protected function getSampleImage(string $extension = 'png'): string
+    protected static function getSampleImage(string $extension = 'png'): string
     {
         return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'sample.' . $extension;
     }
@@ -196,12 +196,12 @@ class ImageTest extends TestCase
     /**
      * @return Generator
      */
-    public function provideSampleImages()
+    public static function provideSampleImages()
     {
-        yield 'png' => [$this->getSampleImage('png')];
-        yield 'jpg' => [$this->getSampleImage('jpg')];
-        yield 'gif' => [$this->getSampleImage('gif')];
-        yield 'webp' => [$this->getSampleImage('webp')];
+        yield 'png' =>  [self::getSampleImage('png')];
+        yield 'jpg' =>  [self::getSampleImage('jpg')];
+        yield 'gif' =>  [self::getSampleImage('gif')];
+        yield 'webp' => [self::getSampleImage('webp')];
     }
 
     /**

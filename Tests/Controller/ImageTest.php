@@ -97,7 +97,7 @@ class ImageTest extends TestCase
      * @param string $extension
      * @return string
      */
-    protected function getSampleImage(string $extension = 'png'): string
+    protected static function getSampleImage(string $extension = 'png'): string
     {
         return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'sample.' . $extension;
     }
@@ -194,14 +194,30 @@ class ImageTest extends TestCase
     }
 
     /**
+     *
+     */
+    public function testGetImageAsPngInvalidFileSymfony61()
+    {
+        $this->expectWarning();
+        $this->expectWarningMessage('Data is not in a recognized format');
+        //$this->expectException(UnsupportedMediaTypeHttpException::class);
+        $cache = $this->getMockBuilder(AdapterInterface::class)->getMock();
+        $url = $this->getSampleImage('txt');
+        $client = new MockHttpClient(new MockResponse(file_get_contents($url)));
+        $image = $this->setupImage($cache, $client, false, false);
+
+        $image->getImageAsPngFromUrl($this->faker->imageUrl());
+    }
+
+    /**
      * @return Generator
      */
-    public function provideSampleImages()
+    public static function provideSampleImages()
     {
-        yield 'png' => [$this->getSampleImage('png')];
-        yield 'jpg' => [$this->getSampleImage('jpg')];
-        yield 'gif' => [$this->getSampleImage('gif')];
-        yield 'webp' => [$this->getSampleImage('webp')];
+        yield 'png' =>  [self::getSampleImage('png')];
+        yield 'jpg' =>  [self::getSampleImage('jpg')];
+        yield 'gif' =>  [self::getSampleImage('gif')];
+        yield 'webp' => [self::getSampleImage('webp')];
     }
 
     /**

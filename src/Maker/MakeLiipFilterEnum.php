@@ -127,9 +127,9 @@ class MakeLiipFilterEnum extends AbstractMaker
         $groups = [];
         foreach ($filters as $i) {
             $filter = u($i);
+            $name = $filter->upper()->toString();
             $filter = $filter->beforeLast('x')->beforeLast('_')->camel()->title()->toString();
-            $groups[$filter][] = $i;
-
+            $groups[$filter][$name] = $i;
         }
 
         $extensionClassNameDetails = $generator->createClassNameDetails(

@@ -7,13 +7,15 @@ namespace Bytes\AvatarBundle\Request;
 use Bytes\AvatarBundle\Entity\UserInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class UserParamConverter
  * @package Bytes\AvatarBundle\Request
+ * @deprecated since 0.10.0, replace with a ValueResolver: https://symfony.com/doc/current/controller/value_resolver.html
  */
-class UserParamConverter implements \Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface
+class UserParamConverter implements ParamConverterInterface
 {
     /**
      * @var EntityManagerInterface
@@ -75,8 +77,7 @@ class UserParamConverter implements \Sensio\Bundle\FrameworkExtraBundle\Request\
 
         $user = $this->entityManager->getRepository($this->userClass)->find($value);
 
-        if(empty($user))
-        {
+        if (empty($user)) {
             return false;
         }
 

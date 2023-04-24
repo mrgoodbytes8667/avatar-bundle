@@ -29,9 +29,11 @@ abstract class Avatar implements AvatarInterface
         if (!($url instanceof UnicodeString)) {
             $url = u($url);
         }
+        
         if ($url->startsWith('/')) {
             $url = $url->after('/');
         }
+        
         return $url->toString();
     }
 

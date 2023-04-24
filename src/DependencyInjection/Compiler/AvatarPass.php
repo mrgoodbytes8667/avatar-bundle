@@ -36,6 +36,7 @@ class AvatarPass implements CompilerPassInterface
                 if(!isset($attributes['alias'])) {
                     $attributes['alias'] = $id;
                 }
+
                 $definition->addMethodCall('addInstance', [
                     new Reference($id),
                     $attributes['alias']

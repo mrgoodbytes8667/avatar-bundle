@@ -155,12 +155,15 @@ class MakeLiipAvatarConfig extends AbstractMaker
                     $url .= ':' . $parsedFullUrl['pass'] . '@';
                 }
             }
+            
             $url .= $parsedFullUrl['host'];
             if (array_key_exists('port', $parsedFullUrl)) {
                 $url = sprintf('%s:%d', $url, $parsedFullUrl['port']);
             }
+            
             $url .= DIRECTORY_SEPARATOR;
         }
+        
         $url = u($url)->ensureEnd(DIRECTORY_SEPARATOR)->toString();
 
         $deleteFile = $input->getOption('deleteFile');
@@ -175,6 +178,7 @@ class MakeLiipAvatarConfig extends AbstractMaker
             } else {
                 $comment = '<fg=yellow>not found</>';
             }
+            
             $io->comment(sprintf(
                     '%s: %s',
                     $comment,

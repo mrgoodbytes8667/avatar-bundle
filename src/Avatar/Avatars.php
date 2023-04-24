@@ -6,9 +6,8 @@ namespace Bytes\AvatarBundle\Avatar;
 
 use Bytes\AvatarBundle\Entity\UserInterface;
 use Bytes\AvatarBundle\Enums\AvatarSize;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Uid\UuidV6;
 
 /**
  * Class Avatars
@@ -48,37 +47,36 @@ class Avatars
     }
 
     /**
-     * @return AvatarInterface[]
-     */
-    public function getAllTypes(): array
-    {
-        if(!empty($this->all))
-        {
-            return $this->all;
-        }
-        $this->all = $this->locator->getInstances();
-        return $this->all;
-    }
-
-    /**
      * @param null $user
      * @return string[]
      */
     public function all($user = null)
     {
         $return = [];
-        foreach($this->getAllTypes() as $tag => $generator)
-        {
-            if($generator::supportsMultipleSizes())
-            {
+        foreach ($this->getAllTypes() as $tag => $avatar) {
+            if ($avatar::supportsMultipleSizes()) {
                 foreach (AvatarSize::cases() as $size) {
-                    $return[] = $generator->generate($user, $size);
+                    $return[] = $avatar->generate($user, $size);
                 }
             } else {
-                $return[] = $generator->generate($user);
+                $return[] = $avatar->generate($user);
             }
         }
+
         return $return;
+    }
+
+    /**
+     * @return AvatarInterface[]
+     */
+    public function getAllTypes(): array
+    {
+        if (!empty($this->all)) {
+            return $this->all;
+        }
+
+        $this->all = $this->locator->getInstances();
+        return $this->all;
     }
 
     /**
@@ -88,11 +86,8 @@ class Avatars
      */
     public function __call(string $name, array $arguments)
     {
-        if($this->locator->has($name))
-        {
+        if ($this->locator->has($name)) {
             return $this->locator->get($name)->generate(...$arguments);
         }
     }
-
-
 }

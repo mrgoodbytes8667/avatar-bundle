@@ -47,6 +47,7 @@ class BytesAvatarExtension extends Extension implements ExtensionInterface
             {
                 $config[$item]['enable'] = false;
             }
+            
             if(!isset($config[$item]['enable']))
             {
                 $config[$item]['enable'] = false;
@@ -59,10 +60,12 @@ class BytesAvatarExtension extends Extension implements ExtensionInterface
         {
             $skips['gravatar'] = true;
         }
+        
         if(!$config['multiavatar']['enable'])
         {
             $skips['multiAvatar'] = true;
         }
+        
         $definition->replaceArgument(0, $skips);
 
         $definition = $container->getDefinition('bytes_avatar.image');

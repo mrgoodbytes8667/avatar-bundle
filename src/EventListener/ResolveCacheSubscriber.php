@@ -17,7 +17,8 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * Class ResolveCacheSubscriber
  * @package Bytes\AvatarBundle\EventListener
  */
-class ResolveCacheSubscriber implements MessageHandlerInterface, EventSubscriberInterface
+#[\Symfony\Component\Messenger\Attribute\AsMessageHandler]
+class ResolveCacheSubscriber implements EventSubscriberInterface
 {
     /**
      * ResolveCacheSubscriber constructor.
@@ -25,7 +26,7 @@ class ResolveCacheSubscriber implements MessageHandlerInterface, EventSubscriber
      * @param FilterService $filterService
      * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(private FilterManager $filterManager, private FilterService $filterService, private EventDispatcherInterface $dispatcher)
+    public function __construct(private readonly FilterManager $filterManager, private readonly FilterService $filterService, private readonly EventDispatcherInterface $dispatcher)
     {
     }
 
@@ -50,7 +51,7 @@ class ResolveCacheSubscriber implements MessageHandlerInterface, EventSubscriber
      *
      * @return array The event names to listen to
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             ResolveCacheEvent::class => 'onResolveCache',

@@ -10,9 +10,10 @@ use Bytes\AvatarBundle\Enums\AvatarSize;
 use Bytes\AvatarBundle\Imaging\Cache;
 use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+use LogicException;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Security;
 use function Symfony\Component\String\u;
 
 /**
@@ -28,7 +29,7 @@ class AvatarSelect2ApiController
      * @param Avatars $avatars
      * @param string $filter
      */
-    public function __construct(private Security $security, private CacheManager $cacheManager, private Cache $cache, private Avatars $avatars, private string $filter)
+    public function __construct(private readonly Security $security, private readonly CacheManager $cacheManager, private readonly Cache $cache, private readonly Avatars $avatars, private readonly string $filter)
     {
     }
 
@@ -40,13 +41,14 @@ class AvatarSelect2ApiController
         /** @var UserInterface $user */
         $user = $this->getUser();
         $content = [];
-        foreach ($this->avatars->getAllTypes() as $type => $generator) {
+        foreach ($this->avatars->getAllTypes() as $type => $avatar) {
             try {
-                $results = $this->getSelect($generator->generate($user, AvatarSize::s300), u($type)->title(), $user->getAvatar());
+                $results = $this->getSelect($avatar->generate($user, AvatarSize::s300), u($type)->title(), $user->getAvatar());
                 $content['results'][] = $results;
             } catch (NotLoadableException) {
             }
         }
+
         $content['pagination'] = [
             'more' => false
         ];
@@ -55,32 +57,11 @@ class AvatarSelect2ApiController
     }
 
     /**
-     * @param string $imageUrl
-     * @param string $text
-     * @param string|null $avatar
-     * @return array
-     */
-    protected function getSelect(string $imageUrl, string $text, ?string $avatar)
-    {
-        if(empty($imageUrl))
-        {
-            throw new NotLoadableException();
-        }
-        $this->cache->warmup($imageUrl, [$this->filter]);
-        return [
-            'id' => $imageUrl,
-            'text' => $text,
-            'cachedImage' => $this->cacheManager->generateUrl($imageUrl, $this->filter, [], null, UrlGeneratorInterface::ABSOLUTE_PATH),
-            'selected' => $imageUrl == $avatar,
-        ];
-    }
-
-    /**
      * Get a user from the Security Token Storage.
      *
      * @return \Symfony\Component\Security\Core\User\UserInterface|object|null
      *
-     * @throws \LogicException If SecurityBundle is not available
+     * @throws LogicException If SecurityBundle is not available
      *
      * @see TokenInterface::getUser()
      */
@@ -96,5 +77,26 @@ class AvatarSelect2ApiController
         }
 
         return $user;
+    }
+
+    /**
+     * @param string $imageUrl
+     * @param string $text
+     * @param string|null $avatar
+     * @return array
+     */
+    protected function getSelect(string $imageUrl, string $text, ?string $avatar)
+    {
+        if (empty($imageUrl)) {
+            throw new NotLoadableException();
+        }
+
+        $this->cache->warmup($imageUrl, [$this->filter]);
+        return [
+            'id' => $imageUrl,
+            'text' => $text,
+            'cachedImage' => $this->cacheManager->generateUrl($imageUrl, $this->filter, [], null, UrlGeneratorInterface::ABSOLUTE_PATH),
+            'selected' => $imageUrl == $avatar,
+        ];
     }
 }

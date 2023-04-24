@@ -21,7 +21,7 @@ class Cache
      * @param FilterManager $filterManager
      * @param DataManager $dataManager
      */
-    public function __construct(private CacheManager $cacheManager, private FilterManager $filterManager, private DataManager $dataManager)
+    public function __construct(private readonly CacheManager $cacheManager, private readonly FilterManager $filterManager, private readonly DataManager $dataManager)
     {
     }
 
@@ -51,6 +51,7 @@ class Cache
                 return !in_array($value, $exclude);
             });
         }
+
         return $filters;
     }
 }

@@ -3,30 +3,44 @@
 namespace <?= $namespace; ?>;
 
 
-use Bytes\EnumSerializerBundle\Enums\Enum;
+use Bytes\EnumSerializerBundle\Enums\StringBackedEnumInterface;
+use Bytes\EnumSerializerBundle\Enums\StringBackedEnumTrait;
+use JetBrains\PhpStorm\Deprecated;
 
 /**
  * Class <?= $class_name; ?><?= "\n" ?>
  * @package <?= $namespace; ?><?= "\n" ?>
- *
-<?php foreach ($filters as $filter): ?>
- * @method static self <?= $filter; ?>()
-<?php endforeach; ?>
 */
-class <?= $class_name; ?> extends Enum<?= "\n" ?>
+enum <?= $class_name; ?>: string implements StringBackedEnumInterface<?= "\n" ?>
 {
+    use StringBackedEnumTrait;<?= "\n" ?>
 <?php foreach ($groups as $group => $value): ?>
+<?php foreach ($value as $name => $filter): ?>
+    case <?= $name; ?> = '<?= $filter; ?>';
+<?php endforeach; ?>
+<?php endforeach; ?>
 
+<?php foreach ($groups as $group => $value): ?>
     /**
      * @return ImagineFilterEnum[]
      */
     public static function get<?= $group; ?>s(): array
     {
         return [
-<?php foreach ($value as $filter): ?>
-            static::<?= $filter; ?>(),
+<?php foreach ($value as $name => $filter): ?>
+            <?= $class_name; ?>::<?= $name; ?>,
 <?php endforeach; ?>
         ];
     }
+<?php endforeach; ?><?= "\n" ?>
+
+<?php foreach ($groups as $group => $value): ?>
+<?php foreach ($value as $name => $filter): ?>
+    #[Deprecated('Use the enum variant', '%class%::<?= $name; ?>')]
+    public static function <?= $filter; ?>(): <?= $class_name; ?><?= "\n" ?>
+    {
+        return <?= $class_name; ?>::<?= $name; ?>;
+    }<?= "\n" ?><?= "\n" ?>
+<?php endforeach; ?>
 <?php endforeach; ?>
 }

@@ -14,6 +14,9 @@ use Symfony\Component\String\UnicodeString;
  */
 class Gravatar extends Avatar implements AvatarInterface
 {
+    /**
+     * @var string
+     */
     const GRAVATAR_URL = 'https://www.gravatar.com/avatar/';
 
     /**
@@ -50,8 +53,10 @@ class Gravatar extends Avatar implements AvatarInterface
             $url = '<img src="' . $url . '"';
             foreach ($atts as $key => $val)
                 $url .= ' ' . $key . '="' . $val . '"';
+            
             $url .= ' />';
         }
+        
         return $url;
     }
 

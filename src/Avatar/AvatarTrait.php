@@ -50,9 +50,11 @@ trait AvatarTrait
                 return $this->normalizeUserId($user->getId());
             }
         }
+
         if (!empty($this->user)) {
             return $this->normalizeUserId($this->user->getId());
         }
+
         return $this->normalizeUserId($user);
     }
 
@@ -65,6 +67,7 @@ trait AvatarTrait
         if ($id instanceof AbstractUid) {
             return $id->toBase32();
         }
+
         return $id;
     }
 }

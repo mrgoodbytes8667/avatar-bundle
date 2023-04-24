@@ -24,7 +24,7 @@ class GravatarApiController
      * GravatarApiController constructor.
      * @param string $nullUserReplacement
      */
-    public function __construct(private string $nullUserReplacement = '')
+    public function __construct(private readonly string $nullUserReplacement = '')
     {
     }
 

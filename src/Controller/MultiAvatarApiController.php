@@ -38,7 +38,7 @@ class MultiAvatarApiController
      * @param string $multiAvatarField
      * @param string $nullUserReplacement
      */
-    public function __construct(private HttpClientInterface $client, private string $multiAvatarSalt = '', private string $multiAvatarField = '', private string $nullUserReplacement = '')
+    public function __construct(private readonly HttpClientInterface $client, private readonly string $multiAvatarSalt = '', private readonly string $multiAvatarField = '', private readonly string $nullUserReplacement = '')
     {
         $this->avatarSize = AvatarSize::s300->value;
     }
@@ -80,6 +80,7 @@ class MultiAvatarApiController
         } else {
             $param = $this->nullUserReplacement;
         }
+        
         return $this->getMultiAvatar($param, $size, $contentType);
     }
 

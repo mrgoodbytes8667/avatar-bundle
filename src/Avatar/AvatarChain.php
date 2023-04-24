@@ -14,7 +14,7 @@ class AvatarChain
      * AvatarChain constructor.
      * @param AvatarInterface[] $instances
      */
-    public function __construct(private array $skips = [], private array $instances = [])
+    public function __construct(private readonly array $skips = [], private array $instances = [])
     {
     }
 
@@ -71,6 +71,7 @@ class AvatarChain
         {
             throw new \InvalidArgumentException(sprintf('The key "%s" is not registered.', $tag));
         }
+
         return $this->instances[$tag];
     }
 }

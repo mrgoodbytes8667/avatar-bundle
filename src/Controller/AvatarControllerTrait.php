@@ -15,9 +15,9 @@ use Symfony\Component\Security\Core\Security;
 trait AvatarControllerTrait
 {
     /**
-     * @var Security
+     * @var \Symfony\Bundle\SecurityBundle\Security
      */
-    private Security $security;
+    private \Symfony\Bundle\SecurityBundle\Security $security;
 
     /**
      * @var Image
@@ -48,18 +48,18 @@ trait AvatarControllerTrait
     }
 
     /**
-     * @return Security
+     * @return \Symfony\Bundle\SecurityBundle\Security
      */
-    protected function getSecurity(): Security
+    protected function getSecurity(): \Symfony\Bundle\SecurityBundle\Security
     {
         return $this->security;
     }
 
     /**
-     * @param Security $security
+     * @param \Symfony\Bundle\SecurityBundle\Security $security
      * @return $this
      */
-    public function setSecurity(Security $security): self
+    public function setSecurity(\Symfony\Bundle\SecurityBundle\Security $security): self
     {
         $this->security = $security;
         return $this;

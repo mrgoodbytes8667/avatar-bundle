@@ -38,7 +38,7 @@ class MakeLiipFilterEnum extends AbstractMaker
      * @param Cache $cache
      * @param string $projectDirectory
      */
-    public function __construct(private Cache $cache, string $projectDirectory)
+    public function __construct(private readonly Cache $cache, string $projectDirectory)
     {
         $this->directory = u($projectDirectory)->ensureEnd(DIRECTORY_SEPARATOR)->append('ImagineFilter.php')->toString();
     }
@@ -116,6 +116,7 @@ class MakeLiipFilterEnum extends AbstractMaker
             } else {
                 $comment = '<fg=yellow>not found</>';
             }
+            
             $io->comment(sprintf(
                     '%s: %s',
                     $comment,

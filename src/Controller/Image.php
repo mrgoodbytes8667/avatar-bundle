@@ -52,7 +52,7 @@ class Image
      * @param int $responseSuccessInitialDuration
      * @param int $responseFallbackDuration
      */
-    public function __construct(private AdapterInterface $cache, private bool $useSuccessCache, private string $successCachePrefix, int $successCacheDuration, private bool $useFallbackCache, private string $fallbackCachePrefix, int $fallbackCacheDuration, private int $responseSuccessCachedDuration, private int $responseSuccessInitialDuration, private int $responseFallbackDuration)
+    public function __construct(private readonly AdapterInterface $cache, private bool $useSuccessCache, private readonly string $successCachePrefix, int $successCacheDuration, private bool $useFallbackCache, private readonly string $fallbackCachePrefix, int $fallbackCacheDuration, private int $responseSuccessCachedDuration, private int $responseSuccessInitialDuration, private int $responseFallbackDuration)
     {
         $successExpiresAfter = DateInterval::createFromDateString(sprintf('%d minutes', $successCacheDuration));
         if (!$successExpiresAfter) {
@@ -67,6 +67,7 @@ class Image
         } else {
             $this->fallbackExpiresAfter = $fallbackExpiresAfter;
         }
+        
         $this->responseSuccessCachedDuration *= 60;
         $this->responseSuccessInitialDuration *= 60;
         $this->responseFallbackDuration *= 60;
@@ -108,6 +109,7 @@ class Image
         if (!$contentType->equals(ContentType::imageJpg, ContentType::imagePng, ContentType::imageGif, ContentType::imageWebP)) {
             throw new UnsupportedMediaTypeHttpException(sprintf('"%s" can only accept content types of jpeg, png, gif, or webp.', __FUNCTION__));
         }
+        
         $fallback = false;
         if (empty($data)) {
             $client ??= HttpClient::create();
@@ -135,12 +137,14 @@ class Image
             }
 
         }
+        
         $info = getimagesizefromstring($data);
         if (isset($info['mime'])) {
             if ($info['mime'] === $contentType->value) {
                 return self::createResponse($data, $contentType, $responseCallback);
             }
         }
+        
         $im = imagecreatefromstring($data);
         if ($im !== false) {
             ob_start();
@@ -159,6 +163,7 @@ class Image
                     imagewebp($im);
                     break;
             }
+            
             imagedestroy($im);
             $image_data = ob_get_contents();
             ob_end_clean();
@@ -196,6 +201,7 @@ class Image
         if (is_callable($responseCallback)) {
             $response = call_user_func($responseCallback, $response);
         }
+        
         return $response;
     }
 
@@ -257,6 +263,7 @@ class Image
         if (!$this->useSuccessCache) {
             return static::getImageAs($contentType, $url, defaultUrl: $defaultUrl, defaultData: $defaultData, client: $this->client);
         }
+        
         try {
             $cacheKey = u($this->successCachePrefix)->append('.getImageAsFromUrl.')->append(urlencode($url))->append('.contents')->toString();
             $item = $this->cache->getItem($cacheKey);
@@ -299,6 +306,7 @@ class Image
                                     ->setMaxAge($this->responseFallbackDuration);
                             };
                         }
+                        
                         $data = $item->get();
                     } elseif (!empty($defaultData)) {
                         $data = $defaultData;
@@ -314,6 +322,7 @@ class Image
                     $this->cache->save($item);
                 }
             }
+            
             $data = $item->get();
 
             return static::getImageAs($contentType, $url, $data, defaultUrl: $defaultUrl, defaultData: $defaultData, client: $this->client, responseCallback: $responseCallable);

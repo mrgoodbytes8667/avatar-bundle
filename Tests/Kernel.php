@@ -89,7 +89,7 @@ class Kernel extends BaseKernel
                 }
             }
 
-            $container->loadFromExtension('framework', ['secret' => 'abc123']);
+            $container->loadFromExtension('framework', ['secret' => 'abc123', 'http_method_override' => false]);
             $container->loadFromExtension('bytes_avatar', $this->config);
         });
     }

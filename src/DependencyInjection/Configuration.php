@@ -20,7 +20,10 @@ class Configuration implements ConfigurationInterface
 
         $treeBuilder->getRootNode()
             ->children()
-                ->scalarNode('user_class')->defaultValue('App\Entity\User')->end()
+                ->scalarNode('user_class')
+                    ->defaultValue('App\Entity\User')
+                    ->setDeprecated('mrgoodbytes8667/avatar-bundle', '0.10.0', 'The ParamConverter component has been deprecated and there is no direct replacement.')
+                ->end()
                 ->scalarNode('null_user_replacement')->defaultValue('')->end()
                 ->scalarNode('select2_filter')
                     ->defaultValue('avatar_thumb_30x30')

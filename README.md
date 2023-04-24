@@ -71,7 +71,7 @@ _bytes_avatar:
   prefix: /avatar
 ```
 
-Create a config file named `config\packages\bytes_avatar.yaml` with the content below, changing the `user_class` value to be the fully qualified name of your User Entity that implements `Bytes\AvatarBundle\Entity\UserInterface`.
+Create a config file named `config\packages\bytes_avatar.yaml` with the content below.
 
 ```yaml
 bytes_avatar:

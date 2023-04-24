@@ -15,7 +15,6 @@ use Bytes\AvatarBundle\EventListener\ResolveCacheSubscriber;
 use Bytes\AvatarBundle\Imaging\Cache;
 use Bytes\AvatarBundle\Maker\MakeLiipAvatarConfig;
 use Bytes\AvatarBundle\Maker\MakeLiipFilterEnum;
-use Bytes\AvatarBundle\Request\UserParamConverter;
 
 /**
  * @param ContainerConfigurator $container
@@ -77,17 +76,6 @@ return static function (ContainerConfigurator $container) {
         ->tag('bytes_avatar.avatars.service', ['alias' => 'multiAvatar'])
         ->alias(Multiavatar::class, 'bytes_avatar.avatars.multiavatar')
         ->public();
-    //endregion
-
-    //region Requests
-    $services->set('bytes_avatar.user_param_converter', UserParamConverter::class)
-        ->args([
-            service('doctrine.orm.default_entity_manager'),
-            '' // $config['user_class']
-        ])
-        ->tag('request.param_converter', [
-            'converter' => 'bytes_avatar_user'
-        ]);
     //endregion
 
     //region Maker
@@ -158,5 +146,6 @@ return static function (ContainerConfigurator $container) {
             ->tag('kernel.event_subscriber')
             ->tag('messenger.message_handler');
     }
+    
     //endregion
 };

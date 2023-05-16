@@ -9,6 +9,7 @@ use Bytes\AvatarBundle\Entity\UserInterface;
 use Bytes\AvatarBundle\Enums\AvatarSize;
 use Bytes\AvatarBundle\Imaging\Cache;
 use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
+use Liip\ImagineBundle\Exception\LogicException as LiipLogicException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use LogicException;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -36,7 +37,7 @@ class AvatarSelect2ApiController
     /**
      * @return JsonResponse
      */
-    public function select2()
+    public function select2(): JsonResponse
     {
         /** @var UserInterface $user */
         $user = $this->getUser();
@@ -45,7 +46,7 @@ class AvatarSelect2ApiController
             try {
                 $results = $this->getSelect($avatar->generate($user, AvatarSize::s300), u($type)->title(), $user->getAvatar());
                 $content['results'][] = $results;
-            } catch (NotLoadableException) {
+            } catch (NotLoadableException|LiipLogicException) {
             }
         }
 
@@ -59,7 +60,7 @@ class AvatarSelect2ApiController
     /**
      * Get a user from the Security Token Storage.
      *
-     * @return \Symfony\Component\Security\Core\User\UserInterface|object|null
+     * @return \Symfony\Component\Security\Core\User\UserInterface|null
      *
      * @throws LogicException If SecurityBundle is not available
      *
@@ -67,11 +68,7 @@ class AvatarSelect2ApiController
      */
     protected function getUser()
     {
-        if (null === $token = $this->security->getToken()) {
-            return null;
-        }
-
-        if (!is_object($user = $token->getUser())) {
+        if (!is_object($user = $this->security->getUser())) {
             // e.g. anonymous authentication
             return null;
         }
@@ -85,7 +82,7 @@ class AvatarSelect2ApiController
      * @param string|null $avatar
      * @return array
      */
-    protected function getSelect(string $imageUrl, string $text, ?string $avatar)
+    protected function getSelect(string $imageUrl, string $text, ?string $avatar): array
     {
         if (empty($imageUrl)) {
             throw new NotLoadableException();
